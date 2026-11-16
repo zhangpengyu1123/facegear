@@ -74,14 +74,35 @@ function computeCore(p) {
   const sHallow = p.s_h_lim * znt;
   const sFallow = p.s_f_lim * 2 * znt;
 
+  const safetyH = sHallow / sH;
+  const safetyF = sFallow / sF;
+  const sHmin = 1.18, sFmin = 1.76;
+
+  // ---- 效率（三验收目标之一）----
+  const mu = 0.06;
+  const ks = (0.08 * (1 + 1 / u)) / Math.max(eps, 0.5);
+  const effMesh = Math.min(Math.max(1 - mu * ks, 0.90), 0.9995);
+  const effTotal = effMesh * 0.99 * 0.995;
+
+  // ---- 体积 / 功率密度 ----
+  const hDisc = 0.15 * r_fp;
+  const rDisc = Math.max(p.r_out, r_fp);
+  const vFace = Math.PI * rDisc * rDisc * hDisc;
+  const vPin = Math.PI * Math.pow(d1 / 2, 2) * b;
+  const volumeL = (vFace + vPin) / 1e6;
+  const powerDensity = volumeL > 1e-9 ? power / volumeL : 0;
+  const safetyMargin = Math.min(safetyH / sHmin, safetyF / sFmin);
+
   return {
     d1, db1, da1, df1, r_fp, u, eps, b,
     ft, fn, vel, ka, kv, khb, kfb, kh, kf,
     zh, ze, zeps, yf, ys, yeps,
     sH0, sH, sF0, sF,
     sHallow, sFallow,
-    safetyH: sHallow / sH, safetyF: sFallow / sF,
-    sHmin: 1.18, sFmin: 1.76, power,
+    safetyH, safetyF,
+    sHmin, sFmin, power,
+    efficiency: effTotal, effMesh,
+    volumeL, powerDensity, safetyMargin,
   };
 }
 
@@ -148,6 +169,12 @@ function localSolve(p) {
     mkVar("safety_h", "接触安全系数 S_H", c.safetyH, "", "强度"),
     mkVar("safety_f", "弯曲安全系数 S_F", c.safetyF, "", "强度"),
     mkVar("k_hface", "面齿轮接触修正 K_Hface", p.k_hface, "", "修正"),
+    // 三个验收目标
+    mkVar("safety_margin", "承载裕度", c.safetyMargin, "", "验收目标"),
+    mkVar("efficiency", "传动总效率 η", c.efficiency * 100, "%", "验收目标"),
+    mkVar("eff_mesh", "啮合效率 η_mesh", c.effMesh * 100, "%", "验收目标"),
+    mkVar("volume_l", "估算体积 V", c.volumeL, "L", "验收目标"),
+    mkVar("power_density", "功率密度 P/V", c.powerDensity, "kW/L", "验收目标"),
   ];
 
   return {
@@ -187,6 +214,18 @@ function readOut(p, key) {
     d1: [c.d1, "小齿轮分度圆 d₁", "mm"],
     s_h0: [c.sH0, "名义接触应力 σ_H0", "MPa"],
     s_f0: [c.sF0, "名义弯曲应力 σ_F0", "MPa"],
+    safety_margin: [c.safetyMargin, "承载裕度", ""],
+    efficiency: [c.efficiency * 100, "传动总效率 η", "%"],
+    eff_mesh: [c.effMesh * 100, "啮合效率 η_mesh", "%"],
+    volume_l: [c.volumeL, "估算体积 V", "L"],
+    power_density: [c.powerDensity, "功率密度 P/V", "kW/L"],
+    fn: [c.fn, "法向力 F_n", "N"],
+    khb: [c.khb, "齿向系数 K_Hβ", ""],
+    kf: [c.kf, "综合 K_F", ""],
+    s_h_allow: [c.sHallow, "许用接触应力", "MPa"],
+    s_f_allow: [c.sFallow, "许用弯曲应力", "MPa"],
+    r_fp: [c.r_fp, "面齿轮分度圆 r_fp", "mm"],
+    b: [c.b, "齿宽 b", "mm"],
   };
   return map[key] || map.s_h;
 }

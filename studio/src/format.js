@@ -8,6 +8,9 @@ const NBSP = "\u00a0";
 
 /** 按物理量 key 规定精度（小数位） */
 const DECIMALS = {
+  // 验收目标
+  safety_margin: 3, efficiency: 2, eff_mesh: 2,
+  volume_l: 2, power_density: 3,
   // 应力
   s_h: 1, s_h0: 1, s_f: 1, s_f0: 1, s_h_allow: 0, s_f_allow: 0,
   // 安全系数

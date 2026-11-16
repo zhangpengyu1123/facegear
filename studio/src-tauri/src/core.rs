@@ -168,6 +168,12 @@ pub struct Core {
     pub s_f_min: f64,
     // 功率
     pub power_kw: f64,
+    // 效率 / 体积 / 功率密度（验收目标）
+    pub efficiency: f64,      // 总效率 0~1
+    pub eff_mesh: f64,        // 啮合效率
+    pub volume_l: f64,        // 估算体积 L
+    pub power_density: f64,   // kW/L
+    pub safety_margin: f64,   // min(S_H/1.18, S_F/1.76)
 }
 
 pub fn compute_core(p: &Params) -> Core {
@@ -247,6 +253,27 @@ pub fn compute_core(p: &Params) -> Core {
     let s_h_min = 1.18;
     let s_f_min = 1.76;
 
+    // ---- 效率（三验收目标之一）----
+    // 啮合损失 ∝ 摩擦系数 × 滑动系数。简化模型：滑动系数随重合度下降、
+    // 随齿数比上升（u 越大，相对滑动越小）。
+    // η_mesh = 1 - μ·k_s，k_s = 0.08·(1+1/u)/ε
+    let mu_fric = 0.06;
+    let k_s = 0.08 * (1.0 + 1.0 / u) / eps.max(0.5);
+    let eta_mesh = (1.0 - mu_fric * k_s).clamp(0.90, 0.9995);
+    // 轴承 0.99、搅油 0.995（工程经验值）
+    let eta_total = eta_mesh * 0.99 * 0.995;
+
+    // ---- 体积（估算，mm³ -> L）----
+    // 面齿轮按「盘 + 齿」的等效圆柱，盘厚取 0.15·r_out
+    let h_disc = 0.15 * r_fp.max(1.0);
+    let r_disc = p.r_out.max(r_fp);
+    let v_face = std::f64::consts::PI * r_disc * r_disc * h_disc;
+    let v_pinion = std::f64::consts::PI * (d1 / 2.0).powi(2) * b;
+    let volume_l = (v_face + v_pinion) / 1e6;
+
+    let power_density = if volume_l > 1e-9 { power_kw / volume_l } else { 0.0 };
+    let safety_margin = (s_h_safety / s_h_min).min(s_f_safety / s_f_min);
+
     Core {
         d1, db1, da1, df1, r_fp, u, eps, b,
         ft, fn_, vel, ka, kv, khb, kfb, kh, kf,
@@ -255,6 +282,8 @@ pub fn compute_core(p: &Params) -> Core {
         s_h_allow, s_f_allow,
         safety_h: s_h_safety, safety_f: s_f_safety,
         s_h_min, s_f_min, power_kw,
+        efficiency: eta_total, eff_mesh: eta_mesh,
+        volume_l, power_density, safety_margin,
     }
 }
 
@@ -334,6 +363,12 @@ pub fn solve(p: &Params) -> SolveOut {
         v("safety_h", "接触安全系数 S_H", c.safety_h, "", "强度"),
         v("safety_f", "弯曲安全系数 S_F", c.safety_f, "", "强度"),
         v("k_hface", "面齿轮接触修正 K_Hface", p.k_hface, "", "修正"),
+        // 三个验收目标
+        v("safety_margin", "承载裕度", c.safety_margin, "", "验收目标"),
+        v("efficiency", "传动总效率 η", c.efficiency * 100.0, "%", "验收目标"),
+        v("eff_mesh", "啮合效率 η_mesh", c.eff_mesh * 100.0, "%", "验收目标"),
+        v("volume_l", "估算体积 V", c.volume_l, "L", "验收目标"),
+        v("power_density", "功率密度 P/V", c.power_density, "kW/L", "验收目标"),
     ];
 
     SolveOut {
@@ -413,6 +448,18 @@ fn read_out(p: &Params, key: &str) -> (f64, String, String) {
         "d1" => (c.d1, "小齿轮分度圆 d₁", "mm"),
         "s_h0" => (c.s_h0, "名义接触应力 σ_H0", "MPa"),
         "s_f0" => (c.s_f0, "名义弯曲应力 σ_F0", "MPa"),
+        "safety_margin" => (c.safety_margin, "承载裕度", ""),
+        "efficiency" => (c.efficiency * 100.0, "传动总效率 η", "%"),
+        "eff_mesh" => (c.eff_mesh * 100.0, "啮合效率 η_mesh", "%"),
+        "volume_l" => (c.volume_l, "估算体积 V", "L"),
+        "power_density" => (c.power_density, "功率密度 P/V", "kW/L"),
+        "fn" => (c.fn_, "法向力 F_n", "N"),
+        "khb" => (c.khb, "齿向系数 K_Hβ", ""),
+        "kf" => (c.kf, "综合 K_F", ""),
+        "s_h_allow" => (c.s_h_allow, "许用接触应力", "MPa"),
+        "s_f_allow" => (c.s_f_allow, "许用弯曲应力", "MPa"),
+        "r_fp" => (c.r_fp, "面齿轮分度圆 r_fp", "mm"),
+        "b" => (c.b, "齿宽 b", "mm"),
         _ => (c.s_h, "接触应力 σ_H", "MPa"),
     };
     (val, label.to_string(), unit.to_string())
