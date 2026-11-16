@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "facegear"
+version = "0.1.0"
+description = "面齿轮传动应力计算：接触应力与齿根弯曲应力（ISO 6336 / HB-Z 84 当量齿轮法）"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "zhangpengyu1123" }]
+keywords = ["face gear", "面齿轮", "gear strength", "ISO 6336", "HB/Z 84",
+            "contact stress", "bending stress", "mechanical design"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: Chinese (Simplified)",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+facegear = "facegear.cli:main"
+
+[project.gui-scripts]
+facegear-gui = "facegear.gui:main"
+
+[tool.setuptools.packages.find]
+include = ["facegear*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
