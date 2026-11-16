@@ -4,7 +4,9 @@ import ParamsView from "./views/ParamsView.vue";
 import KpiBar from "./views/KpiBar.vue";
 import ChartView from "./views/ChartView.vue";
 import ModelView from "./views/ModelView.vue";
+import Timeline from "./views/Timeline.vue";
 import { useSolve } from "./useSolve";
+import { useCheckpoints } from "./useCheckpoints";
 
 // 全局共享参数（四个区域共用同一份，改一处全联动）
 const params = reactive({
@@ -18,6 +20,10 @@ const params = reactive({
 });
 
 const { result, busy, err } = useSolve(params);
+const {
+  list: cpList, activeId: cpActive,
+  snap: cpSnap, restore: cpRestore, remove: cpRemove, clear: cpClear,
+} = useCheckpoints(params);
 
 provide("params", params);
 provide("result", result);
@@ -35,7 +41,6 @@ provide("showVars", showVars);
         <span class="mark"></span>FaceGear Studio<small>面齿轮设计与分析</small>
       </div>
       <div class="spacer"></div>
-      <slot name="status"></slot>
     </header>
 
     <!-- 单页三区：左参数 / 右上函数 / 右下模型 -->
@@ -56,6 +61,16 @@ provide("showVars", showVars);
         <ModelView />
       </section>
     </main>
+
+    <!-- 底部时间线：随时打点 / 回到某一刻 -->
+    <Timeline
+      :list="cpList"
+      :active-id="cpActive"
+      @snap="cpSnap()"
+      @restore="cpRestore"
+      @remove="cpRemove"
+      @clear="cpClear"
+    />
   </div>
 </template>
 
