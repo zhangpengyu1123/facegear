@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面齿轮强度 · 交互计算器</title>
+<style>
+  :root{
+    --bg:#070b14; --panel:#0e1626; --panel2:#121d31; --line:#1e2c44;
+    --ink:#e8eefc; --dim:#7f8fae; --dim2:#5a6b8a;
+    --hot:#ff6b4a; --hot2:#ffb356; --cool:#4ad9ff; --ok:#3ddc84; --bad:#ff5470;
+    --steel:#6b93cc;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1200px 700px at 30% -10%, #14203a 0%, transparent 60%),
+      radial-gradient(900px 640px at 100% 110%, #171c2e 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    overflow:hidden;
+  }
+  .app{display:flex;flex-direction:column;height:100vh}
+  header{
+    display:flex;align-items:baseline;gap:14px;
+    padding:12px 22px 8px;border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  header h1{
+    font-size:16px;font-weight:600;letter-spacing:.16em;margin:0;
+    background:linear-gradient(90deg,#8fb3ff,#e8eefc 45%,#ffb356);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header .ver{font-size:11px;color:var(--dim2);letter-spacing:.1em}
+  header .hint{font-size:11.5px;color:var(--dim);margin-left:auto}
+  main{flex:1;display:flex;min-height:0}
+
+  /* ---------- 舞台 ---------- */
+  .stage{flex:1;position:relative;min-width:0}
+  canvas{display:block;width:100%;height:100%}
+  .overlay{
+    position:absolute;left:18px;bottom:16px;display:flex;gap:8px;align-items:center;
+  }
+  .btn{
+    background:rgba(20,32,54,.85);border:1px solid var(--line);color:var(--ink);
+    font-size:12px;padding:6px 13px;border-radius:8px;cursor:pointer;
+    transition:.2s;font-family:inherit;backdrop-filter:blur(6px);
+  }
+  .btn:hover{border-color:#3a5a8c;background:rgba(30,46,76,.9)}
+  .btn.on{border-color:var(--cool);color:var(--cool)}
+  .badge{
+    position:absolute;right:18px;top:14px;font-size:11px;color:var(--dim2);
+    letter-spacing:.06em;text-align:right;line-height:1.7;
+  }
+  .badge b{color:var(--steel);font-weight:500}
+
+  /* ---------- 面板 ---------- */
+  aside{
+    width:346px;flex-shrink:0;border-left:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(14,22,38,.96),rgba(9,14,24,.96));
+    overflow-y:auto;padding:14px 16px 26px;
+  }
+  aside::-webkit-scrollbar{width:8px}
+  aside::-webkit-scrollbar-thumb{background:#22314c;border-radius:4px}
+  .sec{margin-bottom:13px}
+  .sec h2{
+    font-size:11px;font-weight:600;letter-spacing:.2em;color:var(--dim2);
+    margin:0 0 8px;text-transform:uppercase;
+  }
+  .row{margin-bottom:8px}
+  .row .lab{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:12px;color:var(--dim);margin-bottom:5px;
+  }
+  .row .lab .v{
+    color:var(--ink);font-family:Consolas,"SF Mono",monospace;font-size:12.5px;
+    font-weight:600;
+  }
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:4px;border-radius:2px;
+    background:#1c2942;outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:linear-gradient(180deg,#9fc2f0,#5580bd);
+    border:1px solid #0a1220;cursor:pointer;
+    box-shadow:0 0 0 3px rgba(90,130,200,.14);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:13px;height:13px;border-radius:50%;border:1px solid #0a1220;
+    background:#7ba6dc;cursor:pointer;
+  }
+  select{
+    width:100%;background:#101b2d;color:var(--ink);border:1px solid var(--line);
+    border-radius:7px;padding:7px 9px;font-size:12.5px;font-family:inherit;
+    outline:none;cursor:pointer;
+  }
+  .presets{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+  .presets .btn{flex:1;font-size:11.5px;padding:6px 4px;text-align:center}
+
+  /* ---------- 结果 ---------- */
+  .res{
+    background:linear-gradient(160deg,rgba(24,37,60,.7),rgba(12,19,32,.7));
+    border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+    margin-bottom:8px;
+  }
+  .res .t{font-size:10.5px;color:var(--dim2);letter-spacing:.14em;margin-bottom:5px}
+  .res .n{
+    font-family:Consolas,"SF Mono",monospace;font-size:21px;font-weight:600;
+    letter-spacing:-.01em;
+  }
+  .res .n small{font-size:11px;font-weight:400;color:var(--dim2);margin-left:5px}
+  .res .sub{font-size:11px;color:var(--dim);margin-top:3px;font-family:Consolas,monospace}
+  .bar{height:4px;border-radius:2px;background:#1a263c;margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:2px;transition:width .25s,background .25s}
+  .verdict{
+    border-radius:10px;padding:12px 14px;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:9px;margin-top:4px;
+  }
+  .verdict.ok{background:rgba(40,110,70,.22);border:1px solid rgba(61,220,132,.4);color:#8df0b8}
+  .verdict.bad{background:rgba(130,35,50,.22);border:1px solid rgba(255,84,112,.4);color:#ff9aab}
+  .kv{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);
+      padding:3px 0;border-bottom:1px dashed rgba(40,58,88,.5)}
+  .kv:last-child{border-bottom:none}
+  .kv b{color:var(--ink);font-family:Consolas,monospace;font-weight:500}
+  .note{font-size:10.5px;color:var(--dim2);line-height:1.65;margin-top:10px}
+  @media (max-width:900px){
+    main{flex-direction:column}
+    aside{width:100%;border-left:none;border-top:1px solid var(--line);
+          max-height:52vh}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>面 齿 轮 强 度 · 交 互 计 算 器</h1>
+    <span class="ver">facegear · live</span>
+    <span class="hint">拖动滑块 → 图形与应力实时更新</span>
+  </header>
+
+  <main>
+    <div class="stage">
+      <canvas id="cv"></canvas>
+      <div class="overlay">
+        <button class="btn on" id="btnPlay">⏸ 暂停</button>
+        <button class="btn" id="btnSlow">0.5×</button>
+        <button class="btn on" id="btnFast">1×</button>
+        <button class="btn" id="btnFast2">2×</button>
+      </div>
+      <div class="badge" id="badge"></div>
+    </div>
+
+    <aside>
+      <div class="sec">
+        <h2>预设工况</h2>
+        <div class="presets">
+          <button class="btn" data-preset="heli">直升机</button>
+          <button class="btn" data-preset="ind">工业</button>
+          <button class="btn" data-preset="light">轻载</button>
+          <button class="btn" data-preset="stress">极限</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>几何参数</h2>
+        <div class="row">
+          <div class="lab"><span>模数 m</span><span class="v" id="v_m">6.35 mm</span></div>
+          <input type="range" id="m" min="2" max="10" step="0.05" value="6.35">
+        </div>
+        <div class="row">
+          <div class="lab"><span>小齿轮齿数 z₁</span><span class="v" id="v_z1">25</span></div>
+          <input type="range" id="z1" min="12" max="60" step="1" value="25">
+        </div>
+        <div class="row">
+          <div class="lab"><span>面齿轮齿数 z₂</span><span class="v" id="v_z2">160</span></div>
+          <input type="range" id="z2" min="40" max="220" step="1" value="160">
+        </div>
+        <div class="row">
+          <div class="lab"><span>压力角 α</span><span class="v" id="v_a">25.0 °</span></div>
+          <input type="range" id="a" min="17.5" max="30" step="0.5" value="25">
+        </div>
+        <div class="row">
+          <div class="lab"><span>齿宽 b</span><span class="v" id="v_b">80 mm</span></div>
+          <input type="range" id="b" min="15" max="150" step="1" value="80">
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>工况</h2>
+        <div class="row">
+          <div class="lab"><span>输入扭矩 T</span><span class="v" id="v_T">1600 N·m</span></div>
+          <input type="range" id="T" min="100" max="6000" step="50" value="1600">
+        </div>
+        <div class="row">
+          <div class="lab"><span>转速 n</span><span class="v" id="v_n">1000 rpm</span></div>
+          <input type="range" id="n" min="100" max="6000" step="50" value="1000">
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>材料与修正</h2>
+        <select id="mat"></select>
+        <div class="row" style="margin-top:11px">
+          <div class="lab"><span>面齿轮接触修正 K<sub>Hface</sub></span><span class="v" id="v_k">1.45</span></div>
+          <input type="range" id="k" min="1.0" max="1.8" step="0.01" value="1.45">
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>实时结果</h2>
+        <div class="res">
+          <div class="t">接触应力 σ<sub>H</sub></div>
+          <div class="n" id="r_sH">—<small>MPa</small></div>
+          <div class="sub" id="r_sH_sub">许用 —</div>
+          <div class="bar"><i id="bar_sH" style="width:0%"></i></div>
+        </div>
+        <div class="res">
+          <div class="t">齿根弯曲 σ<sub>F</sub></div>
+          <div class="n" id="r_sF">—<small>MPa</small></div>
+          <div class="sub" id="r_sF_sub">许用 —</div>
+          <div class="bar"><i id="bar_sF" style="width:0%"></i></div>
+        </div>
+        <div class="verdict ok" id="verdict">待计算</div>
+
+        <div style="margin-top:11px">
+          <div class="kv"><span>传动比 u = z₂/z₁</span><b id="r_u">—</b></div>
+          <div class="kv"><span>端面重合度 ε<sub>α</sub></span><b id="r_eps">—</b></div>
+          <div class="kv"><span>切向力 F<sub>t</sub></span><b id="r_ft">—</b></div>
+          <div class="kv"><span>节线速度 v</span><b id="r_v">—</b></div>
+          <div class="kv"><span>S<sub>H</sub> / S<sub>F</sub></span><b id="r_S">—</b></div>
+        </div>
+        <p class="note">
+          公式：ISO 6336-2/-3 当量齿轮法。σ<sub>H</sub> 含面齿轮接触修正
+          K<sub>Hface</sub>（接触迹线沿齿宽集中所致）。结果仅作设计初筛，
+          不替代有限元与试验。
+        </p>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ==================================================================
+   1. 参数定义
+   ================================================================== */
+const MATERIALS = {
+  "20CrMnTi · 渗碳淬火": {sH:1500, sF:480, E:210000},
+  "18Cr2Ni4WA · 渗碳":   {sH:1600, sF:520, E:210000},
+  "20Cr2Ni4 · 渗碳":     {sH:1550, sF:500, E:210000},
+  "20CrMnMo · 渗碳":     {sH:1450, sF:470, E:210000},
+  "42CrMo · 调质":       {sH:720,  sF:300, E:210000},
+  "40Cr · 调质":         {sH:680,  sF:280, E:210000},
+  "38CrMoAl · 渗氮":     {sH:900,  sF:380, E:210000},
+};
+
+const PRESETS = {
+  heli:  {m:6.35, z1:25, z2:160, a:25, b:80,  T:1600, n:1000, k:1.45},
+  ind:   {m:4,    z1:20, z2:100, a:20, b:50,  T:800,  n:1500, k:1.45},
+  light: {m:3,    z1:18, z2:60,  a:20, b:30,  T:150,  n:2000, k:1.35},
+  stress:{m:6.35, z1:25, z2:160, a:25, b:80,  T:4600, n:1000, k:1.45},
+};
+
+const P = {m:6.35, z1:25, z2:160, a:25, b:80, T:1600, n:1000, k:1.45,
+           mat:"20CrMnTi · 渗碳淬火"};
+
+/* ==================================================================
+   2. 计算核心（移植自 facegear 的 Python 实现）
+   ================================================================== */
+function compute(p){
+  const al = p.a * Math.PI / 180;
+  const d1 = p.m * p.z1;
+  const u = p.z2 / p.z1;
+  const Ft = 2 * p.T * 1000 / d1;          // N（T: N·m → N·mm）
+  const Fn = Ft / Math.cos(al);
+
+  // --- 端面重合度（何飞 2023 式(27)）---
+  const ra1 = p.m * (p.z1/2 + 1);
+  const rb1 = p.m * p.z1 * Math.cos(al) / 2;
+  const tha = Math.sqrt(Math.max(ra1*ra1 - rb1*rb1, 0)) / rb1;
+  let eps = (tha*p.z1*Math.sin(al)*Math.cos(al)
+             - (p.z1 - 2 - p.z1*Math.cos(al)**2))
+            / (2*Math.PI*Math.sin(al)*Math.cos(al));
+  if (!isFinite(eps) || eps <= 0) eps = 1.2;
+
+  // --- ISO 6336-2 系数 ---
+  const ZH = Math.sqrt(2 / (Math.cos(al) * Math.sin(al)));
+  const ZE = Math.sqrt(1 / (Math.PI * (2 * (1-0.3*0.3) / 210000)));
+  const Zeps = eps <= 2 ? Math.sqrt(Math.max(4-eps, 0.05)/3) : 1/Math.sqrt(eps);
+
+  // --- 载荷系数（ISO 6336-1 工程简化）---
+  const v = Math.PI * d1 / 1000 * p.n / 60;      // m/s
+  const q = 7;                                    // 精度等级
+  let KV = (1 + Math.pow(v/25, 1.6)) * (1 + 0.03*(q-7));
+  KV = Math.min(Math.max(KV, 1), 1.8);
+  const KHb = Math.min(Math.max(1 + 0.35*Math.max(0, p.b/d1 - 0.5), 1), 1.6);
+  const KFb = Math.pow(KHb, 0.85);
+  const KH = KV * KHb, KF = KV * KFb;
+
+  // --- 接触应力 ---
+  const sH0 = ZH * ZE * Zeps * Math.sqrt((Ft/(p.b*d1)) * ((u+1)/u));
+  const sH = sH0 * Math.sqrt(KH) * p.k;
+
+  // --- 弯曲应力（当量齿数为 z2）---
+  const yf0 = 1.646 + 9.41/p.z2;
+  const ys0 = 1.682 + 3.82/p.z2;
+  const dA = (p.a - 20)/10;
+  const YF = yf0 * (1 - 0.15*dA);
+  const YS = ys0;
+  const Yeps = 0.25 + 0.75/eps;
+  const sF0 = (Ft/(p.b*p.m)) * YF * YS * Yeps;
+  const sF = sF0 * KF;
+
+  // --- 许用应力 ---
+  const mat = MATERIALS[p.mat] || MATERIALS["20CrMnTi · 渗碳淬火"];
+  const sHallow = mat.sH;                          // Z_NT=1（无限寿命）
+  const sFallow = mat.sF * 2.0;                    // Y_ST=2.0（单侧受载）
+
+  // --- 安全系数 ---
+  const SH = sHallow / sH;
+  const SF = sFallow / sF;
+  const SHmin = 1.18, SFmin = 1.76;
+  const ok = SH >= SHmin && SF >= SFmin;
+
+  return {d1, u, Ft, Fn, eps, v, ZH, ZE, Zeps, KV, KHb,
+          sH, sF, sH0, sF0, sHallow, sFallow, SH, SF, SHmin, SFmin, ok,
+          YF, YS, Yeps, mat};
+}
+
+/* ==================================================================
+   3. 画布与等轴测
+   ================================================================== */
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+let W = 0, H = 0, DPR = 1;
+
+function resize(){
+  const r = cv.parentElement.getBoundingClientRect();
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = r.width; H = r.height;
+  cv.width = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  cv.style.width = W + "px";
+  cv.style.height = H + "px";
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener("resize", resize);
+
+// 等轴测
+const C30 = Math.cos(Math.PI/6), S30 = Math.sin(Math.PI/6);
+let CX = 0, CY = 0, SC = 1;
+const iso = (x,y,z) => [CX + (x-y)*C30*SC, CY + (x+y)*S30*SC - z*SC];
+
+/* ==================================================================
+   4. 动画状态
+   ================================================================== */
+let angFG = 0;        // 面齿轮转角
+let angPG = 0;        // 小齿轮转角
+let running = true;
+let speed = 1.0;
+let lastT = performance.now();
+let flash = 0;        // 接触点闪烁相位
+
+/* ==================================================================
+   5. 绘制
+   ================================================================== */
+function drawBackground(){
+  ctx.clearRect(0,0,W,H);
+  // 径向光晕
+  const g = ctx.createRadialGradient(W*0.46, H*0.34, 20, W*0.46, H*0.42, Math.max(W,H)*0.62);
+  g.addColorStop(0, "rgba(30,52,88,.55)");
+  g.addColorStop(1, "rgba(6,10,18,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+  // 地面网格
+  ctx.save();
+  ctx.globalAlpha = 0.13;
+  ctx.strokeStyle = "#2a3c60";
+  ctx.lineWidth = 1;
+  const step = 70;
+  for (let i=-8;i<=8;i++){
+    const a = iso(i*step, -8*step, 0), b = iso(i*step, 8*step, 0);
+    ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+    const c = iso(-8*step, i*step, 0), d = iso(8*step, i*step, 0);
+    ctx.beginPath(); ctx.moveTo(c[0],c[1]); ctx.lineTo(d[0],d[1]); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function polygon(pts, fill, stroke, lw){
+  if (pts.length < 3) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+  if (fill){ ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw||1; ctx.stroke(); }
+}
+
+function drawFaceGear(res){
+  const R_OUT = 190, R_IN = 100, Z_T = 14, DISC_H = 16, R_HUB = 28;
+  // 视觉齿数上限：真实 z2 可达 220，全画会糊成梳子；超过 72 时按 72 画
+  const N = Math.max(16, Math.min(res.z2 ?? 160, 72));
+  const theta = angFG;
+
+  // ---- 盘体侧影 ----
+  const ringAt = (r, z) => {
+    const a = [];
+    for (let k=0;k<=80;k++){
+      const t = k/80*2*Math.PI;
+      a.push(iso(r*Math.cos(t), r*Math.sin(t), z));
+    }
+    return a;
+  };
+  // 侧壁（+y 侧）
+  const wallF = [], wallB = [];
+  for (let k=0;k<=80;k++){
+    const t = k/80*Math.PI;
+    wallF.push(iso(R_OUT*Math.cos(t), R_OUT*Math.sin(t), Z_T));
+    wallB.push(iso(R_OUT*Math.cos(t), R_OUT*Math.sin(t), -DISC_H));
+  }
+  const wall = [...wallF, ...wallB.slice().reverse()];
+  const gW = ctx.createLinearGradient(0, CY-40, 0, CY+120);
+  gW.addColorStop(0, "#25395b"); gW.addColorStop(1, "#0f1a2b");
+  polygon(wall, gW, "#0b1220", .8);
+
+  // 盘面
+  const top = ringAt(R_OUT, Z_T);
+  const gT = ctx.createRadialGradient(CX, CY-20, 10, CX, CY, R_OUT*1.05);
+  gT.addColorStop(0, "#1d2f4c"); gT.addColorStop(1, "#14203a");
+  polygon(top, gT, "#2c4166", .9);
+
+  // ---- 齿 ----
+  const teeth = [];
+  for (let i=0;i<N;i++){
+    const a = i*2*Math.PI/N + theta;
+    const dIn = (2*Math.PI/N)*0.40, dOut = (2*Math.PI/N)*0.335;
+    const pt = (r,d,z) => iso(r*Math.cos(a+d), r*Math.sin(a+d), z);
+    teeth.push({
+      a,
+      inn0:pt(R_IN,-dIn,Z_T), inn1:pt(R_IN,+dIn,Z_T),
+      out0:pt(R_OUT,-dOut,Z_T), out1:pt(R_OUT,+dOut,Z_T),
+      i0b:pt(R_IN,-dIn,0), i1b:pt(R_IN,+dIn,0),
+      o0b:pt(R_OUT,-dOut,0), o1b:pt(R_OUT,+dOut,0)
+    });
+  }
+  // 按 sin(a) 排序：远（y<0）先画
+  teeth.sort((p,q)=>Math.sin(p.a) - Math.sin(q.a));
+
+  const gTooth = ctx.createLinearGradient(0, CY-70, 0, CY+40);
+  gTooth.addColorStop(0, "#b6d2f2");
+  gTooth.addColorStop(.5, "#6d95c9");
+  gTooth.addColorStop(1, "#3a5d8f");
+  const gSide = ctx.createLinearGradient(0, CY-40, 0, CY+60);
+  gSide.addColorStop(0, "#2b4468"); gSide.addColorStop(1, "#16233a");
+
+  // 高亮啮合区的角度（正前方 +x 方向附近）
+  const meshAng = 0;
+  for (const t of teeth){
+    const da = Math.atan2(Math.sin(t.a - meshAng), Math.cos(t.a - meshAng));
+    const near = Math.abs(da) < 0.30;
+    // 径向侧面（朝观察者）
+    const nA = -Math.sin(t.a) + Math.cos(t.a);
+    if (nA > 0){
+      polygon([t.i0b, t.o0b, t.out0, t.inn0], gSide, "#0b1220", .4);
+    } else {
+      polygon([t.i1b, t.o1b, t.out1, t.inn1], "#182a41", "#0b1220", .4);
+    }
+    // 顶面
+    polygon([t.inn0, t.inn1, t.out1, t.out0],
+            near ? "#d8e8fa" : gTooth, "#0b1220", .45);
+  }
+
+  // 轮毂
+  polygon(ringAt(R_HUB, Z_T+0.5), "#0d1728", "#3a5480", 1);
+  polygon(ringAt(R_HUB+13, Z_T+0.5), null, "#2a3d5e", .8);
+}
+
+function drawPinion(res){
+  // 小齿轮轴线在 y=0 平面上、沿 x 方向；与面齿轮在齿环半径处啮合。
+  // 真实几何中小齿轮轴线与面齿轮轴线正交且相交于盘面，此处按示意比例摆放。
+  const R_P = 38, X0 = 108, X1 = 318, Z_P = 14 + R_P;
+  const z1 = Math.min(res.z1 ?? 25, 60);
+  const tTop = Math.atan2(1, -S30);
+  const tBot = tTop - Math.PI;
+  const circ = (x,t,r)=>iso(x, Math.cos(t)*r, Z_P + Math.sin(t)*r);
+
+  // ---- 圆柱侧影 ----
+  const side = [];
+  side.push(circ(X0,tTop,R_P));
+  side.push(circ(X1,tTop,R_P));
+  for (let k=1;k<=20;k++) side.push(circ(X1, tTop+(tBot-tTop)*k/20, R_P));
+  side.push(circ(X0,tBot,R_P));
+  for (let k=1;k<=20;k++) side.push(circ(X0, tBot-Math.PI*k/20, R_P));
+
+  const gP = ctx.createLinearGradient(0, CY-Z_P-R_P*SC, 0, CY-Z_P+R_P*SC);
+  gP.addColorStop(0, "#dbe9fa");
+  gP.addColorStop(.45, "#88aeda");
+  gP.addColorStop(1, "#3d5f8c");
+  polygon(side, gP, "#152441", 1.1);
+
+  // ---- 圆柱面轴向齿棱（只画朝观察者一面，淡） ----
+  ctx.strokeStyle = "rgba(24,40,66,.38)"; ctx.lineWidth = 0.9;
+  for (let k=0;k<z1;k+=2){
+    const t = k/z1*2*Math.PI + angPG;
+    if (Math.sin(t) < -0.05) continue;
+    const a = circ(X0,t,R_P), b = circ(X1,t,R_P);
+    ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+  }
+
+  // ---- 右端面 ----
+  const face = [];
+  for (let k=0;k<=60;k++) face.push(circ(X1, k/60*2*Math.PI, R_P));
+  polygon(face, "rgba(143,176,216,.52)", "#152441", .9);
+
+  // 端面齿
+  for (let k=0;k<z1;k++){
+    const t0 = (k-0.28)/z1*2*Math.PI + angPG;
+    const t1 = (k+0.28)/z1*2*Math.PI + angPG;
+    polygon([circ(X1,t0,R_P-1), circ(X1,t0,R_P+5),
+             circ(X1,t1,R_P+5), circ(X1,t1,R_P-1)],
+            "rgba(185,208,233,.9)", "#152441", .7);
+  }
+  // 轴孔
+  const hole = [];
+  for (let k=0;k<=30;k++) hole.push(circ(X1, k/30*2*Math.PI, 9));
+  polygon(hole, "#0a1220", "#2c4166", .9);
+
+  return {X1, Z_P, R_P};
+}
+
+function drawAxes(res, pg){
+  const {X1, Z_P, R_P} = pg;
+  ctx.save();
+  ctx.setLineDash([6,6]);
+  // 面齿轮轴（竖直）
+  ctx.strokeStyle = "rgba(74,217,255,.38)";
+  ctx.beginPath();
+  let a = iso(0,0,260), b = iso(0,0,-110);
+  ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+  // 小齿轮轴（沿 x）
+  ctx.strokeStyle = "rgba(255,179,86,.38)";
+  ctx.beginPath();
+  a = iso(-300,0,Z_P); b = iso(340,0,Z_P);
+  ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+  ctx.restore();
+
+  // 直角标记
+  const o = iso(0,0,Z_P);
+  ctx.strokeStyle = "rgba(255,179,86,.65)"; ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.moveTo(o[0]+16, o[1]); ctx.lineTo(o[0]+16, o[1]-16);
+  ctx.lineTo(o[0], o[1]-16); ctx.stroke();
+  ctx.fillStyle = "rgba(255,179,86,.85)";
+  ctx.font = "11px Consolas, monospace";
+  ctx.fillText("γ=90°", o[0]+21, o[1]-20);
+}
+
+function drawMarks(res){
+  // ---- 接触点（面齿轮齿环外缘，小齿轮下方）----
+  const cp = iso(190, 0, 14);
+  const pulse = 0.5 + 0.5*Math.sin(flash*2.2);
+  const g = ctx.createRadialGradient(cp[0],cp[1],1, cp[0],cp[1],28+8*pulse);
+  g.addColorStop(0, "rgba(255,107,74,.75)");
+  g.addColorStop(1, "rgba(255,107,74,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(cp[0],cp[1],28+8*pulse,0,7); ctx.fill();
+  ctx.fillStyle = "#ffd9c8";
+  ctx.beginPath(); ctx.arc(cp[0],cp[1],3.6,0,7); ctx.fill();
+  ctx.strokeStyle = "#ff6b4a"; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.arc(cp[0],cp[1],3.6,0,7); ctx.stroke();
+
+  // 引线 + 文字（向左上引，避免出界）
+  ctx.strokeStyle = "rgba(255,107,74,.6)"; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cp[0]-4, cp[1]-3);
+  ctx.lineTo(cp[0]-64, cp[1]-52);
+  ctx.lineTo(cp[0]-186, cp[1]-52);
+  ctx.stroke();
+  ctx.fillStyle = "#ff9c7a"; ctx.font = "600 11.5px Segoe UI, sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText("接触点 → σH", cp[0]-60, cp[1]-58);
+  ctx.fillStyle = "#b9828a"; ctx.font = "10px Consolas, monospace";
+  ctx.fillText(res.sH.toFixed(0)+" MPa", cp[0]-60, cp[1]-44);
+  ctx.textAlign = "left";
+
+  // ---- 齿根 ----
+  const rp = iso(-140, 52, 2);
+  const g2 = ctx.createRadialGradient(rp[0],rp[1],1, rp[0],rp[1],26);
+  g2.addColorStop(0, "rgba(74,217,255,.42)");
+  g2.addColorStop(1, "rgba(74,217,255,0)");
+  ctx.fillStyle = g2;
+  ctx.beginPath(); ctx.arc(rp[0],rp[1],26,0,7); ctx.fill();
+  ctx.fillStyle = "#4ad9ff";
+  ctx.beginPath(); ctx.arc(rp[0],rp[1],3,0,7); ctx.fill();
+
+  ctx.strokeStyle = "rgba(74,217,255,.5)"; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(rp[0]-3, rp[1]+3);
+  ctx.lineTo(rp[0]-86, rp[1]+48);
+  ctx.lineTo(rp[0]-250, rp[1]+48);
+  ctx.stroke();
+  ctx.fillStyle = "#7fdcf5"; ctx.font = "600 11.5px Segoe UI, sans-serif";
+  ctx.fillText("齿根 → σF", rp[0]-246, rp[1]+42);
+  ctx.fillStyle = "#6a8fa8"; ctx.font = "10px Consolas, monospace";
+  ctx.fillText(res.sF.toFixed(0)+" MPa", rp[0]-246, rp[1]+57);
+
+  // ---- 部件名 ----
+  ctx.fillStyle = "rgba(143,182,232,.9)"; ctx.font = "600 11.5px Segoe UI, sans-serif";
+  ctx.fillText(`面齿轮 z₂=${res.z2 ?? P.z2}`, 22, H-100);
+  ctx.fillStyle = "rgba(195,215,242,.9)";
+  const pgTxt = iso(215, 0, 118);   // 小齿轮正上方
+  ctx.fillText(`小齿轮 z₁=${res.z1 ?? P.z1}`, pgTxt[0]-20, pgTxt[1]);
+}
+
+/* ==================================================================
+   6. 主循环
+   ================================================================== */
+let lastRes = null;
+
+function frame(now){
+  const dt = Math.min((now - lastT)/1000, 0.05);
+  lastT = now;
+  if (running){
+    const w2 = 0.55 * speed;              // 面齿轮角速度（rad/s）
+    angFG += w2 * dt;
+    angPG -= w2 * (P.z2 / P.z1) * dt;     // 传动比
+    flash += dt * 60;
+  }
+
+  const res = compute(P);
+  lastRes = res;
+
+  // 构图
+  SC = Math.min(W / 760, H / 620) * 0.92;
+  CX = W * 0.46;
+  CY = H * 0.50 + 30 * SC;
+
+  drawBackground();
+  drawFaceGear({...P, ...res});
+  const pg = drawPinion({...P, ...res});
+  drawAxes(res, pg);
+  drawMarks({...P, ...res});
+
+  requestAnimationFrame(frame);
+}
+
+/* ==================================================================
+   7. UI 绑定
+   ================================================================== */
+function fmt(v, d){ return v.toFixed(d===undefined?0:d); }
+
+const SLIDERS = [
+  {id:"m",  key:"m",  dec:2, unit:" mm"},
+  {id:"z1", key:"z1", dec:0, unit:""},
+  {id:"z2", key:"z2", dec:0, unit:""},
+  {id:"a",  key:"a",  dec:1, unit:" °"},
+  {id:"b",  key:"b",  dec:0, unit:" mm"},
+  {id:"T",  key:"T",  dec:0, unit:" N·m"},
+  {id:"n",  key:"n",  dec:0, unit:" rpm"},
+  {id:"k",  key:"k",  dec:2, unit:""},
+];
+
+// 材料下拉
+const sel = document.getElementById("mat");
+Object.keys(MATERIALS).forEach(k=>{
+  const o = document.createElement("option");
+  o.value = k; o.textContent = k; sel.appendChild(o);
+});
+sel.value = P.mat;
+sel.addEventListener("change", ()=>{ P.mat = sel.value; updateReadout(); });
+
+function bindSlider(s){
+  const el = document.getElementById(s.id);
+  const lab = document.getElementById("v_" + s.id);
+  const sync = ()=>{
+    const v = parseFloat(el.value);
+    P[s.key] = v;
+    lab.textContent = v.toFixed(s.dec) + s.unit;
+    updateReadout();
+  };
+  el.addEventListener("input", sync);
+  sync();
+}
+SLIDERS.forEach(bindSlider);
+
+// 预设
+document.querySelectorAll("[data-preset]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const p = PRESETS[btn.dataset.preset];
+    if (!p) return;
+    P.m = p.m; P.z1 = p.z1; P.z2 = p.z2; P.a = p.a;
+    P.b = p.b; P.T = p.T; P.n = p.n; P.k = p.k;
+    // 回填滑块
+    document.getElementById("m").value = p.m;
+    document.getElementById("z1").value = p.z1;
+    document.getElementById("z2").value = p.z2;
+    document.getElementById("a").value = p.a;
+    document.getElementById("b").value = p.b;
+    document.getElementById("T").value = p.T;
+    document.getElementById("n").value = p.n;
+    document.getElementById("k").value = p.k;
+    SLIDERS.forEach(s=>{
+      const v = parseFloat(document.getElementById(s.id).value);
+      document.getElementById("v_"+s.id).textContent = v.toFixed(s.dec)+s.unit;
+    });
+    updateReadout();
+  });
+});
+
+// 播放控制
+const btnPlay = document.getElementById("btnPlay");
+btnPlay.addEventListener("click", ()=>{
+  running = !running;
+  btnPlay.textContent = running ? "⏸ 暂停" : "▶ 播放";
+  btnPlay.classList.toggle("on", running);
+});
+[["btnSlow",0.5],["btnFast",1],["btnFast2",2]].forEach(([id,sp])=>{
+  const b = document.getElementById(id);
+  b.addEventListener("click", ()=>{
+    speed = sp;
+    document.querySelectorAll("#btnSlow,#btnFast,#btnFast2")
+      .forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+  });
+});
+
+// 结果面板
+function updateReadout(){
+  const r = compute(P);
+  const $ = id => document.getElementById(id);
+  $("r_sH").innerHTML = r.sH.toFixed(0) + "<small>MPa</small>";
+  $("r_sH_sub").textContent = "许用 " + r.sHallow.toFixed(0) + " MPa";
+  $("r_sF").innerHTML = r.sF.toFixed(0) + "<small>MPa</small>";
+  $("r_sF_sub").textContent = "许用 " + r.sFallow.toFixed(0) + " MPa";
+
+  // 进度条：应力占许用的比例
+  const rH = Math.min(r.sH / r.sHallow, 1.6);
+  const rF = Math.min(r.sF / r.sFallow, 1.6);
+  const barH = $("bar_sH"), barF = $("bar_sF");
+  barH.style.width = Math.min(rH/1.6*100, 100).toFixed(1) + "%";
+  barF.style.width = Math.min(rF/1.6*100, 100).toFixed(1) + "%";
+  barH.style.background = rH > 1 ? "linear-gradient(90deg,#ff6b4a,#ff5470)"
+                                 : "linear-gradient(90deg,#3ddc84,#4ad9ff)";
+  barF.style.background = rF > 1 ? "linear-gradient(90deg,#ff6b4a,#ff5470)"
+                                 : "linear-gradient(90deg,#3ddc84,#4ad9ff)";
+
+  $("r_u").textContent = r.u.toFixed(2);
+  $("r_eps").textContent = r.eps.toFixed(3);
+  $("r_ft").textContent = r.Ft.toFixed(0) + " N";
+  $("r_v").textContent = r.v.toFixed(2) + " m/s";
+  $("r_S").textContent = r.SH.toFixed(2) + " / " + r.SF.toFixed(2);
+
+  const v = $("verdict");
+  v.className = "verdict " + (r.ok ? "ok" : "bad");
+  v.textContent = r.ok
+    ? `✓ 合格　　S_H=${r.SH.toFixed(2)} ≥ ${r.SHmin}　S_F=${r.SF.toFixed(2)} ≥ ${r.SFmin}`
+    : `✗ 不合格　S_H=${r.SH.toFixed(2)} / ${r.SHmin}　S_F=${r.SF.toFixed(2)} / ${r.SFmin}`;
+
+  // 右上角徽标
+  const badge = document.getElementById("badge");
+  badge.innerHTML =
+    `m=${P.m.toFixed(2)} · z₁=${P.z1} · z₂=${P.z2}<br>` +
+    `α=${P.a.toFixed(1)}° · b=${P.b.toFixed(0)}mm · ${P.mat.split(" · ")[0]}<br>` +
+    `<b>u=${r.u.toFixed(2)}　ε=${r.eps.toFixed(2)}　v=${r.v.toFixed(1)} m/s</b>`;
+}
+
+/* ==================================================================
+   8. 启动
+   ================================================================== */
+resize();
+updateReadout();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
