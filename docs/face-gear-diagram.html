@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面齿轮传动 · 示意图</title>
+<style>
+  :root{
+    --bg:#080c16; --ink:#e8eefc; --dim:#7f8fae; --line:#1e2c44;
+    --hot:#ff6b4a; --hot2:#ffb356; --cool:#4ad9ff; --cool2:#7c9bff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 640px at 50% -10%, #16203a 0%, transparent 62%),
+      radial-gradient(820px 520px at 88% 108%, #1a2035 0%, transparent 58%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    min-height:100vh;padding:26px 16px 40px;
+  }
+  h1{
+    font-size:clamp(19px,2.7vw,28px);font-weight:600;letter-spacing:.18em;
+    margin:0 0 6px;background:linear-gradient(90deg,#8fb3ff,#e8eefc 42%,#ffb356);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{color:var(--dim);font-size:12px;letter-spacing:.24em;margin:0 0 4px}
+  .stage{width:100%;max-width:1060px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .legend{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));
+    gap:13px;margin-top:14px;width:100%;max-width:1060px;
+  }
+  .card{
+    background:linear-gradient(160deg,rgba(28,42,70,.74),rgba(14,21,37,.74));
+    border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+    transition:border-color .3s,transform .3s;
+  }
+  .card:hover{border-color:#33517d;transform:translateY(-2px)}
+  .card h3{margin:0 0 7px;font-size:13px;font-weight:600;letter-spacing:.07em}
+  .card p{margin:0;font-size:12.3px;line-height:1.7;color:#b6c3dc}
+  .k{color:var(--hot2);font-weight:600}
+  .c{color:var(--cool2);font-weight:600}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .foot{color:#4d5c78;font-size:11px;margin-top:20px;letter-spacing:.05em}
+  @keyframes pulse{0%,100%{r:6;opacity:.95}50%{r:10;opacity:.4}}
+  .pulse{animation:pulse 2.2s ease-in-out infinite}
+  @keyframes dash{to{stroke-dashoffset:-26}}
+  .flow{stroke-dasharray:5 7;animation:dash 1.5s linear infinite}
+  @media (prefers-reduced-motion:reduce){.pulse,.flow{animation:none}}
+</style>
+</head>
+<body>
+
+<h1>面 齿 轮 传 动</h1>
+<p class="sub">ORTHOGONAL FACE GEAR · 等轴测示意</p>
+
+<div class="stage">
+  <svg id="scene" viewBox="0 0 1060 580" role="img"
+       aria-label="正交面齿轮传动等轴测示意图">
+    <defs>
+      <linearGradient id="gTooth" x1="0" y1="0" x2="0.35" y2="1">
+        <stop offset="0" stop-color="#a9c8ee"/>
+        <stop offset=".45" stop-color="#6189bd"/>
+        <stop offset="1" stop-color="#33547f"/>
+      </linearGradient>
+      <linearGradient id="gToothSide" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2b4468"/>
+        <stop offset="1" stop-color="#16233a"/>
+      </linearGradient>
+      <linearGradient id="gDisc" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#25395b"/>
+        <stop offset="1" stop-color="#101b2d"/>
+      </linearGradient>
+      <linearGradient id="gPin" x1="0" y1="0" x2="0.15" y2="1">
+        <stop offset="0" stop-color="#d3e3f7"/>
+        <stop offset=".42" stop-color="#82a8d8"/>
+        <stop offset="1" stop-color="#3b5d8a"/>
+      </linearGradient>
+      <radialGradient id="gGlow">
+        <stop offset="0" stop-color="#ff7a4a" stop-opacity=".60"/>
+        <stop offset="1" stop-color="#ff7a4a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gGlow2">
+        <stop offset="0" stop-color="#4ad9ff" stop-opacity=".42"/>
+        <stop offset="1" stop-color="#4ad9ff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.6"/>
+      </filter>
+    </defs>
+    <g id="grid" opacity=".18"></g>
+    <g id="faceGear"></g>
+    <g id="pinion"></g>
+    <g id="axes"></g>
+    <g id="marks"></g>
+  </svg>
+</div>
+
+<div class="legend">
+  <div class="card">
+    <h3><span class="dot" style="background:#6b93cc"></span>它是什么实物</h3>
+    <p>一个<span class="c">端面带齿的圆盘</span>——业内叫「面齿轮」(face gear)。
+       齿不在圆柱面上，而在<b>盘面上沿半径方向</b>排布（图中一圈放射状齿）。
+       与一个普通圆柱小齿轮正交啮合，用在<b>直升机主减速器</b>第一级。</p>
+  </div>
+  <div class="card">
+    <h3><span class="dot" style="background:#ffb356"></span>软件在算什么</h3>
+    <p><span class="k">接触应力 σH</span>：两齿面压在一起那个点（红点），
+       约 800~900 MPa 量级，决定会不会点蚀。<br>
+       <span class="k">齿根弯曲应力 σF</span>：齿根拐角（蓝点），
+       决定齿会不会从根部折断。</p>
+  </div>
+  <div class="card">
+    <h3><span class="dot" style="background:#7c9bff"></span>理论从哪来</h3>
+    <p>两条腿：<b>Litvin 展成理论</b>（盘面上的齿是插齿刀「滚」出来的，
+       本质是渐开线）+ <b>ISO 6336 当量齿轮法</b>（等效成一对直齿圆柱齿轮，
+       套圆柱齿轮强度公式）。面齿轮<b>没有专用标准</b>。</p>
+  </div>
+  <div class="card">
+    <h3><span class="dot" style="background:#ff6b4a"></span>是理论还是实物</h3>
+    <p>软件算的是<b>理论值</b>——理想几何、均匀材料的解析解。
+       实物有制造误差、装配偏斜、表面粗糙度、残余应力，理论只能当
+       <b>设计初筛</b>，最终靠试验和有限元。这也是论文里解析值与有限元
+       常差 5%~20% 的原因。</p>
+  </div>
+</div>
+
+<p class="foot">facegear v0.1.0 · 单文件示意图 · 无外部依赖</p>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const svg=document.getElementById("scene");
+
+  // ---------- 标准等轴测投影 ----------
+  const CX=520, CY=430, C=Math.cos(Math.PI/6), S=Math.sin(Math.PI/6);
+  const iso=(x,y,z)=>[CX+(x-y)*C, CY+(x+y)*S - z];
+
+  const el=(tag,at,parent)=>{
+    const e=document.createElementNS(NS,tag);
+    for(const k in at) e.setAttribute(k,at[k]);
+    (parent||svg).appendChild(e); return e;
+  };
+  const pt=p=>p[0].toFixed(2)+","+p[1].toFixed(2);
+  const poly=(pts,at,parent)=>el("polygon",Object.assign({points:pts.map(pt).join(" ")},at),parent);
+  const path=(d,at,parent)=>el("path",Object.assign({d},at),parent);
+
+  // ---------- 背景网格 ----------
+  const grid=document.getElementById("grid");
+  for(let i=-7;i<=7;i++){
+    const a=iso(i*80,-480,0), b=iso(i*80,480,0);
+    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:"#2a3a5c","stroke-width":.5},grid);
+    const c=iso(-480,i*80,0), d=iso(480,i*80,0);
+    el("line",{x1:c[0],y1:c[1],x2:d[0],y2:d[1],stroke:"#2a3a5c","stroke-width":.5},grid);
+  }
+
+  // ============================================================
+  //  面齿轮：盘 + 一圈径向齿
+  // ============================================================
+  const fg=document.getElementById("faceGear");
+  const N=40, R_IN=104, R_OUT=196, Z_T=14, DISC_H=16, R_HUB=30;
+
+  // --- 盘体（上下两个椭圆 + 侧壁）---
+  const discPts=(z,r)=>{const a=[];for(let k=0;k<=96;k++){const t=k/96*2*Math.PI;a.push(iso(r*Math.cos(t),r*Math.sin(t),z));}return a;};
+  const top=discPts(Z_T, R_OUT), bot=discPts(-DISC_H, R_OUT);
+  // 侧壁（只画前半，sin(t)>=0 对应 +y 侧，等轴测里在右下）
+  const wallF=[], wallB=[];
+  for(let k=0;k<=96;k++){
+    const t=k/96*2*Math.PI;
+    if(Math.sin(t) < 0) continue;
+    wallF.push(iso(R_OUT*Math.cos(t),R_OUT*Math.sin(t),Z_T));
+    wallB.push(iso(R_OUT*Math.cos(t),R_OUT*Math.sin(t),-DISC_H));
+  }
+  if(wallF.length>1){
+    poly([...wallF,...wallB.slice().reverse()],
+      {fill:"url(#gDisc)",stroke:"#0c1421","stroke-width":.6},fg);
+  }
+  // 盘面
+  poly(top,{fill:"#1a2a44",stroke:"#2c4166","stroke-width":.8},fg);
+
+  // --- 齿 ---
+  const teeth=[];
+  for(let i=0;i<N;i++){
+    const a=i*2*Math.PI/N;
+    const dIn=(2*Math.PI/N)*0.335, dOut=(2*Math.PI/N)*0.285;
+    const P=(r,d,z)=>iso(r*Math.cos(a+d), r*Math.sin(a+d), z);
+    teeth.push({
+      a,
+      inn0:P(R_IN,-dIn,0), inn1:P(R_IN,+dIn,0),
+      out0:P(R_OUT,-dOut,0), out1:P(R_OUT,+dOut,0),
+      inn0t:P(R_IN,-dIn,Z_T), inn1t:P(R_IN,+dIn,Z_T),
+      out0t:P(R_OUT,-dOut,Z_T), out1t:P(R_OUT,+dOut,Z_T)
+    });
+  }
+  // 先画"背面"（y<0 即 sin(a)<0 的齿在盘后侧），再画前侧
+  const back=teeth.filter(t=>Math.sin(t.a)<0).sort((p,q)=>p.a-q.a);
+  const front=teeth.filter(t=>Math.sin(t.a)>=0).sort((p,q)=>p.a-q.a);
+  [...back,...front].forEach(t=>{
+    const a=t.a, dIn=(2*Math.PI/N)*0.335, dOut=(2*Math.PI/N)*0.285;
+    // 选朝向观察者(1,1,1)的那一侧径向面
+    const nA = -Math.sin(a-dIn) + Math.cos(a-dIn);
+    const nB =  Math.sin(a+dIn) - Math.cos(a+dIn);
+    if (nA >= nB) {
+      poly([iso(R_IN*Math.cos(a-dIn),R_IN*Math.sin(a-dIn),0),
+            iso(R_OUT*Math.cos(a-dOut),R_OUT*Math.sin(a-dOut),0),
+            iso(R_OUT*Math.cos(a-dOut),R_OUT*Math.sin(a-dOut),Z_T),
+            iso(R_IN*Math.cos(a-dIn),R_IN*Math.sin(a-dIn),Z_T)],
+        {fill:"#21364f",stroke:"#0b1220","stroke-width":.4,"stroke-opacity":.5},fg);
+    } else {
+      poly([iso(R_IN*Math.cos(a+dIn),R_IN*Math.sin(a+dIn),0),
+            iso(R_OUT*Math.cos(a+dOut),R_OUT*Math.sin(a+dOut),0),
+            iso(R_OUT*Math.cos(a+dOut),R_OUT*Math.sin(a+dOut),Z_T),
+            iso(R_IN*Math.cos(a+dIn),R_IN*Math.sin(a+dIn),Z_T)],
+        {fill:"#1b2c42",stroke:"#0b1220","stroke-width":.4,"stroke-opacity":.5},fg);
+    }
+    // 顶面
+    poly([t.inn0t,t.inn1t,t.out1t,t.out0t],
+      {fill:"url(#gTooth)",stroke:"#0b1220","stroke-width":.45,"stroke-opacity":.45},fg);
+  });
+
+  // 轮毂
+  poly(discPts(Z_T,R_HUB),{fill:"#0d1728",stroke:"#3a5480","stroke-width":1.1},fg);
+  poly(discPts(Z_T,R_HUB+14),{fill:"none",stroke:"#2a3d5e","stroke-width":.7,"stroke-dasharray":"3 4"},fg);
+
+  // ============================================================
+  //  小齿轮：轴线沿 x 的圆柱，端面带齿
+  // ============================================================
+  const pg=document.getElementById("pinion");
+  const R_P=44, X0=-120, X1=128, Z_P=Z_T+R_P;
+  const NT=16;
+
+  // 等轴测下 y-z 平面圆的两个极值角（屏幕 Y 最小 / 最大）
+  const tTop=Math.atan2(1,-S);        // 116.565°
+  const tBot=tTop-Math.PI;            // -63.435°
+
+  const circ=(x,t,r)=>iso(x, Math.cos(t)*r, Z_P + Math.sin(t)*r);
+
+  // ---- 圆柱侧影：上母线 → 右端可见弧 → 下母线 → 左端背弧 ----
+  const side=[];
+  side.push(circ(X0,tTop,R_P));
+  side.push(circ(X1,tTop,R_P));
+  for(let k=1;k<=24;k++){
+    side.push(circ(X1, tTop+(tBot-tTop)*k/24, R_P));   // X1 端，经 +y 侧
+  }
+  side.push(circ(X0,tBot,R_P));
+  for(let k=1;k<=24;k++){
+    side.push(circ(X0, tBot-Math.PI*k/24, R_P));       // X0 端，经 -y 侧
+  }
+  poly(side,{fill:"url(#gPin)","fill-opacity":.93,
+    stroke:"#152441","stroke-width":1.1},pg);
+
+  // ---- 圆柱面上的轴向齿棱 ----
+  for(let k=0;k<NT;k++){
+    const t=k/NT*2*Math.PI;
+    if(Math.sin(t) < -0.25) continue;
+    const a=circ(X0,t,R_P), b=circ(X1,t,R_P);
+    el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],
+      stroke:"#1a2a44","stroke-width":.9,"stroke-opacity":.55},pg);
+  }
+
+  // ---- 右端面（可见）+ 端面齿 ----
+  const facePts=[];
+  for(let k=0;k<=96;k++) facePts.push(circ(X1, k/96*2*Math.PI, R_P));
+  poly(facePts,{fill:"#8fb0d8","fill-opacity":.52,
+    stroke:"#152441","stroke-width":.9},pg);
+  // 端面齿：在圆周外侧画短小的齿块（凸出）
+  for(let k=0;k<NT;k++){
+    const t0=(k-0.30)/NT*2*Math.PI, t1=(k+0.30)/NT*2*Math.PI;
+    poly([circ(X1,t0,R_P-1),circ(X1,t0,R_P+5),
+          circ(X1,t1,R_P+5),circ(X1,t1,R_P-1)],
+      {fill:"#b9d0e9","fill-opacity":.85,stroke:"#152441","stroke-width":.7},pg);
+  }
+  const hole=(x)=>{const a=[];for(let k=0;k<=48;k++){
+    const t=k/48*2*Math.PI;a.push(iso(x,Math.cos(t)*10,Z_P+Math.sin(t)*10));}return a;};
+  poly(hole(X1),{fill:"#0a1220",stroke:"#2c4166","stroke-width":.9},pg);
+
+  // ============================================================
+  //  轴线
+  // ============================================================
+  const ax=document.getElementById("axes");
+  const zTop=iso(0,0,250), zBot=iso(0,0,-110);
+  el("line",{x1:zTop[0],y1:zTop[1],x2:zBot[0],y2:zBot[1],
+    stroke:"#4ad9ff","stroke-width":1.1,"stroke-opacity":.45,"stroke-dasharray":"6 6"},ax);
+  const xA=iso(-300,0,Z_P), xB=iso(330,0,Z_P);
+  el("line",{x1:xA[0],y1:xA[1],x2:xB[0],y2:xB[1],
+    stroke:"#ffb356","stroke-width":1.1,"stroke-opacity":.45,"stroke-dasharray":"6 6"},ax);
+  // 直角
+  const o=iso(0,0,Z_P);
+  path(`M ${o[0]+18} ${o[1]} L ${o[0]+18} ${o[1]-18} L ${o[0]} ${o[1]-18}`,
+    {fill:"none",stroke:"#ffb356","stroke-width":1.2,"stroke-opacity":.65},ax);
+  el("text",{x:o[0]+24,y:o[1]-24,fill:"#ffb356","font-size":11,
+    "font-family":"Consolas,monospace"},ax).textContent="γ=90°";
+
+  // ============================================================
+  //  标注
+  // ============================================================
+  const mk=document.getElementById("marks");
+
+  // 接触点：面齿轮外圈齿顶，小齿轮最低点
+  const cp=iso(150,0,Z_T);
+  el("circle",{cx:cp[0],cy:cp[1],r:34,fill:"url(#gGlow)"},mk);
+  el("circle",{cx:cp[0],cy:cp[1],r:6,fill:"#ff6b4a",class:"pulse",filter:"url(#soft)"},mk);
+  el("circle",{cx:cp[0],cy:cp[1],r:4.2,fill:"#ffe3d6",stroke:"#ff6b4a","stroke-width":1.4},mk);
+  path(`M ${cp[0]+6} ${cp[1]-4} L ${cp[0]+78} ${cp[1]-58} L ${cp[0]+210} ${cp[1]-58}`,
+    {fill:"none",stroke:"#ff6b4a","stroke-width":.9,"stroke-opacity":.7},mk);
+  el("text",{x:cp[0]+84,y:cp[1]-66,fill:"#ff9c7a","font-size":12,
+    "font-weight":600},mk).textContent="接触点 → σH 接触应力";
+  el("text",{x:cp[0]+84,y:cp[1]-51,fill:"#b98a90","font-size":10.5,
+    "font-family":"Consolas,monospace"},mk).textContent="Hertz ≈ 800~900 MPa";
+
+  // 齿根
+  const rp=iso(-150,58,2);
+  el("ellipse",{cx:rp[0],cy:rp[1],rx:32,ry:14,fill:"url(#gGlow2)"},mk);
+  el("circle",{cx:rp[0],cy:rp[1],r:3.6,fill:"#4ad9ff"},mk);
+  path(`M ${rp[0]-4} ${rp[1]+4} L ${rp[0]-96} ${rp[1]+52} L ${rp[0]-286} ${rp[1]+52}`,
+    {fill:"none",stroke:"#4ad9ff","stroke-width":.9,"stroke-opacity":.65},mk);
+  el("text",{x:rp[0]-282,y:rp[1]+44,fill:"#7fdcf5","font-size":12,
+    "font-weight":600},mk).textContent="齿根 → σF 弯曲应力";
+  el("text",{x:rp[0]-282,y:rp[1]+59,fill:"#6a8fa8","font-size":10.5,
+    "font-family":"Consolas,monospace"},mk).textContent="30° 切线危险截面";
+
+  // 部件名
+  el("text",{x:96,y:506,fill:"#8fb6e8","font-size":12.5,
+    "letter-spacing":"1.5"},mk).textContent="面齿轮 z₂ · 端面带齿的圆盘";
+  el("text",{x:630,y:300,fill:"#c3d7f2","font-size":12.5,
+    "letter-spacing":"1.5"},mk).textContent="小齿轮 z₁ · 普通圆柱齿轮";
+
+  // 转向
+  const w2=iso(R_OUT+42,-R_OUT-10,Z_T);
+  path(`M ${w2[0]+34} ${w2[1]-22} A 34 34 0 0 1 ${w2[0]+34} ${w2[1]+22}`,
+    {fill:"none",stroke:"#4ad9ff","stroke-width":1.2,"stroke-opacity":.5,class:"flow"},mk);
+  el("text",{x:w2[0]+50,y:w2[1]-24,fill:"#4ad9ff","font-size":10.5},mk).textContent="ω₂";
+
+  const w1=iso(-210,0,Z_P+R_P+18);
+  path(`M ${w1[0]} ${w1[1]} A 26 26 0 0 1 ${w1[0]+52} ${w1[1]}`,
+    {fill:"none",stroke:"#ffb356","stroke-width":1.2,"stroke-opacity":.5,class:"flow"},mk);
+  el("text",{x:w1[0]-14,y:w1[1]-8,fill:"#ffb356","font-size":10.5},mk).textContent="ω₁";
+})();
+</script>
+</body>
+</html>
