@@ -1,0 +1,271 @@
+/* ============================================================
+   FaceGear Studio · 浅色主题
+   ------------------------------------------------------------
+   色彩体系（升级档）：表面 / 文字 / 线条 / 语义色 四层
+   基准色相 Slate + Blue，参考工程软件（CAD/CAE）阅读习惯：
+   白底、低饱和边框、蓝色强调、数据色高对比
+   ============================================================ */
+:root {
+  /* ---- 表面层 ---- */
+  --bg: #f4f6fa;
+  --bg2: #eaeff6;
+  --panel: #ffffff;
+  --panel2: #f8fafc;
+  --panel3: #f1f5f9;
+
+  /* ---- 线条层 ---- */
+  --line: #e4e9f1;
+  --line2: #cdd6e2;
+
+  /* ---- 文字层 ---- */
+  --ink: #0f172a;
+  --dim: #475569;
+  --dim2: #64748b;
+
+  /* ---- 语义色 ---- */
+  --brand: #2563eb;
+  --brand2: #1d4ed8;
+  --brand-soft: #eff4ff;
+  --hot: #e11d48;
+  --hot2: #d97706;
+  --cool: #0891b2;
+  --cool2: #2563eb;
+  --ok: #059669;
+  --ok-soft: #ecfdf5;
+  --bad: #dc2626;
+  --bad-soft: #fef2f2;
+  --warn: #b45309;
+  --warn-soft: #fffbeb;
+  --steel: #2563eb;
+
+  /* ---- 阴影 ---- */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body, #app { margin: 0; height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- 布局 ---------- */
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 20px; height: 54px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  z-index: 10;
+}
+.brand {
+  display: flex; align-items: baseline; gap: 9px;
+  font-size: 15px; font-weight: 700; letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand .mark {
+  width: 9px; height: 9px; border-radius: 3px;
+  background: linear-gradient(135deg, var(--brand), var(--cool));
+  transform: translateY(-1px);
+}
+.brand small {
+  font-size: 11px; color: var(--dim2); font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.tabs { display: flex; gap: 2px; margin-left: 20px; }
+.tab {
+  position: relative;
+  padding: 0 15px; height: 54px; display: flex; align-items: center;
+  cursor: pointer; font-size: 13px; color: var(--dim);
+  border-bottom: 2px solid transparent;
+  transition: color 0.16s, border-color 0.16s;
+}
+.tab:hover { color: var(--ink); }
+.tab.active {
+  color: var(--brand2); font-weight: 600;
+  border-bottom-color: var(--brand);
+}
+.tab .ico { margin-right: 6px; opacity: 0.55; font-size: 13px; }
+.tab.active .ico { opacity: 1; }
+
+.spacer { flex: 1; }
+.status {
+  font-size: 11px; color: var(--dim2); font-family: Consolas, monospace;
+  padding: 4px 10px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--panel2);
+}
+.status b { color: var(--brand); font-weight: 500; }
+
+.body { flex: 1; min-height: 0; display: flex; }
+
+/* ---------- 通用面板 ---------- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.panel-title {
+  font-size: 11px; letter-spacing: 0.14em; color: var(--dim2);
+  text-transform: uppercase; margin: 0 0 9px; font-weight: 600;
+}
+
+/* ---------- 滚动条 ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #cfd8e3; border-radius: 6px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: #b6c2d2; background-clip: padding-box; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  background: var(--panel); border: 1px solid var(--line2);
+  color: var(--dim); font-size: 12px; padding: 6px 14px;
+  border-radius: 7px; cursor: pointer;
+  transition: all 0.15s; font-family: inherit; font-weight: 500;
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover {
+  border-color: #b8c4d4; color: var(--ink); background: var(--panel3);
+}
+.btn.on {
+  border-color: var(--brand); color: var(--brand2);
+  background: var(--brand-soft); font-weight: 600;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.10);
+}
+.btn.sm { padding: 4px 10px; font-size: 11.5px; }
+.btn.ghost { background: transparent; box-shadow: none; }
+
+/* ---------- 滑块 ---------- */
+.slider-row { margin-bottom: 10px; }
+.slider-lab {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; color: var(--dim); margin-bottom: 5px;
+}
+.slider-lab .val {
+  color: var(--ink); font-family: Consolas, "SF Mono", monospace;
+  font-size: 12.5px; font-weight: 600;
+  background: var(--panel3); padding: 1px 7px; border-radius: 5px;
+  border: 1px solid var(--line);
+}
+input[type="range"] {
+  -webkit-appearance: none; width: 100%; height: 5px;
+  border-radius: 3px; background: #e2e8f0; outline: none; cursor: pointer;
+}
+input[type="range"]:hover { background: #d7dfe9; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+  background: #ffffff; border: 2px solid var(--brand); cursor: grab;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  transition: transform 0.12s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--brand); background: #fff; cursor: grab;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+
+/* ---------- 表单 ---------- */
+select, input[type="number"], input[type="text"] {
+  background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line2); border-radius: 7px;
+  padding: 7px 10px; font-size: 12.5px; font-family: inherit;
+  outline: none; cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+select:hover, input[type="number"]:hover { border-color: #b8c4d4; }
+select:focus, input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* ---------- 指标卡 ---------- */
+.metric {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px; padding: 11px 14px;
+  margin-bottom: 9px;
+  box-shadow: var(--shadow-sm);
+}
+.metric .t {
+  font-size: 11px; color: var(--dim2); letter-spacing: 0.06em;
+  margin-bottom: 5px; font-weight: 500;
+}
+.metric .n {
+  font-family: Consolas, "SF Mono", monospace; font-size: 23px;
+  font-weight: 650; letter-spacing: -0.02em; color: var(--ink);
+  line-height: 1.15;
+}
+.metric .n small {
+  font-size: 11px; font-weight: 500; color: var(--dim2); margin-left: 5px;
+}
+.metric .sub {
+  font-size: 11px; color: var(--dim2); margin-top: 4px;
+  font-family: Consolas, monospace;
+}
+
+.bar {
+  height: 5px; border-radius: 3px; background: #edf1f6;
+  margin-top: 9px; overflow: hidden;
+}
+.bar i {
+  display: block; height: 100%; border-radius: 3px;
+  transition: width 0.25s, background 0.25s;
+}
+
+/* ---------- 判定 ---------- */
+.verdict {
+  border-radius: 9px; padding: 11px 14px; font-size: 12.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  font-family: Consolas, "SF Mono", monospace;
+}
+.verdict.ok {
+  background: var(--ok-soft); border: 1px solid #a7e8c8; color: #047857;
+}
+.verdict.bad {
+  background: var(--bad-soft); border: 1px solid #fbc4c4; color: #b91c1c;
+}
+.verdict.warn {
+  background: var(--warn-soft); border: 1px solid #fcd9a4; color: var(--warn);
+}
+
+/* ---------- 键值 ---------- */
+.kv {
+  display: flex; justify-content: space-between; font-size: 12px;
+  color: var(--dim); padding: 5px 0;
+  border-bottom: 1px solid var(--line);
+}
+.kv:last-child { border-bottom: none; }
+.kv b {
+  color: var(--ink); font-family: Consolas, monospace;
+  font-weight: 600; font-size: 12px;
+}
+
+.note {
+  font-size: 11px; color: var(--dim2); line-height: 1.7; margin-top: 10px;
+}
+
+/* ---------- 提示 ---------- */
+.warnbox {
+  background: var(--warn-soft); border: 1px solid #fcd9a4;
+  border-radius: 8px; padding: 9px 12px; font-size: 11.5px;
+  color: var(--warn); line-height: 1.65; margin-bottom: 8px;
+}
