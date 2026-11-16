@@ -56,16 +56,23 @@ function syncRange() {
 /* ---------------- 绘图 ---------------- */
 const axisStyle = {
   axisLine: { lineStyle: { color: "#cbd5e1" } },
-  axisTick: { lineStyle: { color: "#cbd5e1" } },
-  axisLabel: { color: "#64748b", fontSize: 10.5 },
-  splitLine: { lineStyle: { color: "#eef2f7" } },
-  nameTextStyle: { color: "#475569", fontSize: 11, fontWeight: 500 },
+  axisTick: { lineStyle: { color: "#cbd5e1" }, length: 4 },
+  axisLabel: { color: "#475569", fontSize: 11 },
+  splitLine: { lineStyle: { color: "#e8edf5", width: 1 } },
+  minorSplitLine: { show: true, lineStyle: { color: "#f2f5fa" } },
+  minorTick: { show: true, lineStyle: { color: "#dfe6ef" } },
+  nameTextStyle: { color: "#334155", fontSize: 11.5, fontWeight: 500 },
 };
 
-function baseOption() {
+function baseOption(title) {
   return {
     backgroundColor: "transparent",
-    grid: { left: 66, right: 30, top: 46, bottom: 54 },
+    grid: { left: 70, right: 34, top: 58, bottom: 56 },
+    title: title ? {
+      text: title,
+      left: 2, top: 6,
+      textStyle: { color: "#0f172a", fontSize: 13, fontWeight: 600 },
+    } : undefined,
     tooltip: {
       trigger: "axis",
       backgroundColor: "#ffffff",
@@ -103,6 +110,7 @@ async function render() {
         steps: steps.value,
         out_key: outKey.value,
       });
+      updateWorkPoint(res);
       draw1d(res);
     }
   } finally {
@@ -114,44 +122,103 @@ function draw1d(res) {
   const xs = res.xs.map((x) => +x.toFixed(4));
   const isScatter = chartType.value === "scatter";
   const isBar = chartType.value === "bar";
+
+  const title = `${res.y_label} 随 ${res.x_label} 的变化`;
   const opt = {
-    ...baseOption(),
+    ...baseOption(title),
+    legend: {
+      right: 6, top: 6, itemWidth: 14, itemHeight: 8, itemGap: 14,
+      textStyle: { color: "#475569", fontSize: 11 },
+      data: [res.y_label],
+    },
     xAxis: {
       type: isBar ? "category" : "value",
       data: isBar ? xs.map((x) => x.toFixed(2)) : undefined,
       min: isBar ? undefined : xs[0],
       max: isBar ? undefined : xs[xs.length - 1],
       name: `${res.x_label}${res.x_unit ? " (" + res.x_unit + ")" : ""}`,
-      nameLocation: "middle", nameGap: 28,
+      nameLocation: "middle", nameGap: 32,
       ...axisStyle,
-      axisLabel: { ...axisStyle.axisLabel, rotate: isBar ? 45 : 0 },
+      axisLabel: { ...axisStyle.axisLabel, rotate: isBar ? 45 : 0,
+                   formatter: (v) => (Number.isFinite(+v) ? (+v).toFixed(1) : v) },
     },
     yAxis: {
       type: "value",
       scale: true,
       name: `${res.y_label}${res.y_unit ? " (" + res.y_unit + ")" : ""}`,
-      nameLocation: "middle", nameGap: 46,
+      nameLocation: "middle", nameGap: 52,
+      // 让许用阈值线始终可见（超出数据范围时自动扩展坐标轴）
+      max: (v) => {
+        const th = THRESHOLD[outKey.value];
+        return th ? Math.max(v.max, th.value) * 1.02 : v.max * 1.05;
+      },
       ...axisStyle,
     },
     series: [{
+      name: res.y_label,
       type: isBar ? "bar" : isScatter ? "scatter" : "line",
       data: isBar ? res.ys.map((y, i) => [xs[i], y]) : xs.map((x, i) => [x, res.ys[i]]),
       smooth: !isScatter && !isBar,
       symbolSize: isScatter ? 7 : 5,
-      showSymbol: isScatter,
+      showSymbol: isScatter || xs.length <= 30,
       lineStyle: { width: 2.2, color: "#2563eb" },
       itemStyle: { color: "#2563eb", borderColor: "#fff", borderWidth: isScatter ? 1 : 0 },
       areaStyle: (!isScatter && !isBar) ? {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: "rgba(37,99,235,.22)" },
+          { offset: 0, color: "rgba(37,99,235,.20)" },
           { offset: 1, color: "rgba(37,99,235,.01)" },
         ]),
       } : undefined,
       barWidth: isBar ? "58%" : undefined,
       barMaxWidth: 26,
+      // 许用阈值线（仅当看应力类变量时）
+      markLine: THRESHOLD[outKey.value] ? {
+        silent: true, symbol: "none",
+        lineStyle: { color: "#dc2626", type: "dashed", width: 1.2, opacity: 0.75 },
+        label: {
+          formatter: `许用 ${THRESHOLD[outKey.value].value} ${THRESHOLD[outKey.value].unit}`,
+          color: "#dc2626", fontSize: 10.5, position: "insideEndTop",
+        },
+        data: [{ yAxis: THRESHOLD[outKey.value].value }],
+      } : undefined,
+      // 当前参数所在工作点
+      markPoint: workPoint.value ? {
+        symbol: "pin", symbolSize: 44,
+        itemStyle: { color: "#0f172a" },
+        label: { color: "#fff", fontSize: 9.5, formatter: workPoint.value.label },
+        data: [{ coord: [workPoint.value.x, workPoint.value.y] }],
+      } : undefined,
     }],
   };
   chart.setOption(opt, true);
+}
+
+/** 应力类变量的许用值（画阈值线用） */
+const THRESHOLD = {
+  s_h: { value: 1500, unit: "MPa" },
+  s_f: { value: 960, unit: "MPa" },
+};
+
+/** 当前参数对应的工作点（x = 当前扫描参数值，y = 当前输出值） */
+const workPoint = ref(null);
+const curPoint = ref(null);
+function updateWorkPoint(res) {
+  const cur = params[xKey.value];
+  curPoint.value = { x: cur, xUnit: res.x_unit, xLabel: res.x_label, y: null, yUnit: res.out_unit, yLabel: res.y_label };
+  if (!Number.isFinite(cur)) { workPoint.value = null; return; }
+  const xs = res.xs, ys = res.ys;
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < xs.length; i++) {
+    const d = Math.abs(xs[i] - cur);
+    if (d < bd) { bd = d; best = i; }
+  }
+  curPoint.value.y = ys[best];
+  if (cur < xs[0] || cur > xs[xs.length - 1]) { workPoint.value = null; return; }
+  workPoint.value = {
+    x: +xs[best].toFixed(3),
+    y: +ys[best].toFixed(1),
+    label: `当前 ${cur}`,
+  };
 }
 
 function draw2d(res, yKey) {
@@ -167,8 +234,8 @@ function draw2d(res, yKey) {
 
   if (chartType.value === "heatmap") {
     const opt = {
-      ...baseOption(),
-      grid: { left: 70, right: 88, top: 44, bottom: 56 },
+      ...baseOption(`${res.z_label} 二维分布（${res.x_label} × ${res.y_label}）`),
+      grid: { left: 74, right: 92, top: 58, bottom: 58 },
       tooltip: {
         ...baseOption().tooltip,
         formatter: (p) => `${res.x_label} ${xs[p.data[0]]}<br/>${res.y_label} ${ys[p.data[1]]}<br/><b>${p.data[2]} ${res.z_unit}</b>`,
@@ -189,8 +256,8 @@ function draw2d(res, yKey) {
     const contourData = [];
     res.z.forEach((row, j) => row.forEach((v, i) => contourData.push([xs[i], ys[j], v])));
     const opt = {
-      ...baseOption(),
-      grid: { left: 70, right: 88, top: 44, bottom: 56 },
+      ...baseOption(`${res.z_label} 等值线（${res.x_label} × ${res.y_label}）`),
+      grid: { left: 74, right: 92, top: 58, bottom: 58 },
       tooltip: {
         ...baseOption().tooltip,
         formatter: (p) => `${res.x_label} ${p.data?.[0]}<br/>${res.y_label} ${p.data?.[1]}<br/><b>${p.data?.[2]} ${res.z_unit}</b>`,
@@ -269,6 +336,20 @@ watch(params, render, { deep: true });
         <input type="range" v-model.number="steps" min="10" max="200" step="5" />
       </div>
 
+      <!-- 当前工作点读数（填充左栏空白，同时给出结论） -->
+      <div v-if="curPoint" class="wpcard">
+        <p class="panel-title">当前工作点</p>
+        <div class="wrow">
+          <span>{{ curPoint.xLabel || xKey }}</span>
+          <b>{{ curPoint.x }}<em>{{ curPoint.xUnit }}</em></b>
+        </div>
+        <div class="wrow">
+          <span>{{ curPoint.yLabel }}</span>
+          <b>{{ curPoint.y !== null ? curPoint.y.toFixed(1) : "—" }}<em>{{ curPoint.yUnit }}</em></b>
+        </div>
+        <div class="wnote" v-if="curPoint.y === null">当前值在扫描区间之外</div>
+      </div>
+
       <p class="note">
         热力/等高线为二维扫描：X 轴＝所选参数，Y 轴固定为
         <b style="color:var(--dim)">{{ outKey === 's_f' ? '扭矩 T' : '齿宽 b' }}</b>。
@@ -286,7 +367,7 @@ watch(params, render, { deep: true });
 <style scoped>
 .cv { display: flex; flex: 1; min-width: 0; min-height: 0; }
 .cv-left {
-  width: 274px; flex-shrink: 0; overflow-y: auto; padding: 16px 18px 34px;
+  width: 336px; flex-shrink: 0; overflow-y: auto; padding: 16px 18px 40px;
   border-right: 1px solid var(--line);
   background: var(--panel2);
 }
@@ -299,4 +380,23 @@ watch(params, render, { deep: true });
   background: var(--panel); padding: 5px 11px; border-radius: 7px;
   border: 1px solid var(--line); box-shadow: var(--shadow-sm);
 }
+
+/* 当前工作点卡片 */
+.wpcard {
+  margin-top: 18px; padding: 12px 14px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 9px; box-shadow: var(--shadow-sm);
+}
+.wrow {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 4px 0; font-size: 12px; color: var(--dim);
+  border-bottom: 1px solid #f2f5f9;
+}
+.wrow:last-of-type { border-bottom: none; }
+.wrow b {
+  color: var(--ink); font-family: Consolas, monospace;
+  font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.wrow b em { color: var(--dim2); font-style: normal; font-size: 10px; font-weight: 400; margin-left: 3px; }
+.wnote { font-size: 11px; color: var(--warn); margin-top: 7px; }
 </style>

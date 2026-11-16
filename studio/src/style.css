@@ -104,9 +104,8 @@ body {
 
 .spacer { flex: 1; }
 .status {
-  font-size: 11px; color: var(--dim2); font-family: Consolas, monospace;
-  padding: 4px 10px; border: 1px solid var(--line);
-  border-radius: 6px; background: var(--panel2);
+  font-size: 11px; color: #94a3b8; font-family: Consolas, monospace;
+  letter-spacing: 0.02em;
 }
 .status b { color: var(--brand); font-weight: 500; }
 

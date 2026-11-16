@@ -32,9 +32,7 @@ const params = reactive({
 provide("params", params);
 provide("goto", (id) => (active.value = id));
 
-const statusText = computed(() =>
-  isTauri ? "Tauri · Rust 内核" : "浏览器预览 · JS 降级"
-);
+const statusText = computed(() => (isTauri ? "" : "Web 预览"));
 </script>
 
 <template>
@@ -53,7 +51,7 @@ const statusText = computed(() =>
         </div>
       </div>
       <div class="spacer"></div>
-      <div class="status"><b>{{ statusText }}</b></div>
+      <div class="status" v-if="statusText">{{ statusText }}</div>
     </div>
 
     <div class="body">
