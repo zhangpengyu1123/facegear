@@ -1,24 +1,12 @@
 <script setup>
-import { ref, reactive, provide, computed, watch } from "vue";
+import { reactive, provide, ref } from "vue";
 import ParamsView from "./views/ParamsView.vue";
+import KpiBar from "./views/KpiBar.vue";
 import ChartView from "./views/ChartView.vue";
 import ModelView from "./views/ModelView.vue";
-import { isTauri } from "./api";
+import { useSolve } from "./useSolve";
 
-const TABS = [
-  { id: "params", label: "参数输入", icon: "⚙" },
-  { id: "chart", label: "函数曲线", icon: "∿" },
-  { id: "model", label: "模型展示", icon: "◈" },
-];
-
-const active = ref(
-  ["params", "chart", "model"].includes(location.hash.slice(1))
-    ? location.hash.slice(1)
-    : "params"
-);
-watch(active, (v) => { location.hash = v; });
-
-// 全局共享参数（三个界面共用同一份，改一处全联动）
+// 全局共享参数（四个区域共用同一份，改一处全联动）
 const params = reactive({
   subject: "OrthogonalSpur",
   m: 6.35, z1: 25, z2: 160, zs: 27,
@@ -29,35 +17,78 @@ const params = reactive({
   k_hface: 1.45, quality: 7, beta: 0,
 });
 
-provide("params", params);
-provide("goto", (id) => (active.value = id));
+const { result, busy, err } = useSolve(params);
 
-const statusText = computed(() => (isTauri ? "" : "Web 预览"));
+provide("params", params);
+provide("result", result);
+provide("busy", busy);
+provide("err", err);
+
+const showVars = ref(false);
+provide("showVars", showVars);
 </script>
 
 <template>
   <div class="app">
-    <div class="topbar">
+    <header class="topbar">
       <div class="brand">
         <span class="mark"></span>FaceGear Studio<small>面齿轮设计与分析</small>
       </div>
-      <div class="tabs">
-        <div
-          v-for="t in TABS" :key="t.id"
-          class="tab" :class="{ active: active === t.id }"
-          @click="active = t.id"
-        >
-          <span style="opacity:.7;margin-right:6px">{{ t.icon }}</span>{{ t.label }}
-        </div>
-      </div>
       <div class="spacer"></div>
-      <div class="status" v-if="statusText">{{ statusText }}</div>
-    </div>
+      <slot name="status"></slot>
+    </header>
 
-    <div class="body">
-      <ParamsView v-show="active === 'params'" />
-      <ChartView v-show="active === 'chart'" />
-      <ModelView v-show="active === 'model'" />
-    </div>
+    <!-- 单页三区：左参数 / 右上函数 / 右下模型 -->
+    <main class="grid">
+      <section class="area area-left">
+        <ParamsView />
+      </section>
+
+      <section class="area area-kpi">
+        <KpiBar />
+      </section>
+
+      <section class="area area-chart">
+        <ChartView />
+      </section>
+
+      <section class="area area-model">
+        <ModelView />
+      </section>
+    </main>
   </div>
 </template>
+
+<style scoped>
+.grid {
+  flex: 1; min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) 2fr;
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
+  gap: 9px;
+  padding: 9px;
+}
+.area {
+  position: relative;
+  min-width: 0; min-height: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.area-left { grid-column: 1; grid-row: 1 / span 3; background: var(--panel2); }
+.area-kpi { grid-column: 2; grid-row: 1; }
+.area-chart { grid-column: 2; grid-row: 2; }
+.area-model { grid-column: 2; grid-row: 3; }
+
+@media (max-width: 1080px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .area-left { grid-column: 1; grid-row: 1; }
+  .area-kpi { grid-column: 1; grid-row: 2; }
+  .area-chart { grid-column: 1; grid-row: 3; }
+  .area-model { grid-column: 1; grid-row: 4; }
+}
+</style>

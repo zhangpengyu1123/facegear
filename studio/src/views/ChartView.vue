@@ -67,11 +67,11 @@ const axisStyle = {
 function baseOption(title) {
   return {
     backgroundColor: "transparent",
-    grid: { left: 70, right: 34, top: 58, bottom: 56 },
+    grid: { left: 62, right: 26, top: 38, bottom: 44 },
     title: title ? {
       text: title,
-      left: 2, top: 6,
-      textStyle: { color: "#0f172a", fontSize: 13, fontWeight: 600 },
+      left: 4, top: 4,
+      textStyle: { color: "#0f172a", fontSize: 12, fontWeight: 600 },
     } : undefined,
     tooltip: {
       trigger: "axis",
@@ -127,8 +127,8 @@ function draw1d(res) {
   const opt = {
     ...baseOption(title),
     legend: {
-      right: 6, top: 6, itemWidth: 14, itemHeight: 8, itemGap: 14,
-      textStyle: { color: "#475569", fontSize: 11 },
+      right: 8, top: 4, itemWidth: 13, itemHeight: 7, itemGap: 12,
+      textStyle: { color: "#475569", fontSize: 10.5 },
       data: [res.y_label],
     },
     xAxis: {
@@ -303,100 +303,116 @@ watch(params, render, { deep: true });
 
 <template>
   <div class="cv">
-    <aside class="cv-left">
-      <p class="panel-title">X 轴 · 扫描参数</p>
-      <select v-model="xKey" style="width:100%">
-        <option v-for="o in X_KEYS" :key="o.k" :value="o.k">{{ o.label }}</option>
-      </select>
-
-      <div class="range">
-        <div class="slider-row">
-          <div class="slider-lab"><span>起点</span><span class="val">{{ xRange.from }}</span></div>
-          <input type="range" v-model.number="xRange.from" :min="0" :max="xRange.to" step="0.01" />
-        </div>
-        <div class="slider-row">
-          <div class="slider-lab"><span>终点</span><span class="val">{{ xRange.to }}</span></div>
-          <input type="range" v-model.number="xRange.to" :min="xRange.from" max="2000" step="0.01" />
+    <!-- 工具条 -->
+    <div class="bar">
+      <div class="field">
+        <label>X 轴</label>
+        <select v-model="xKey" class="sel">
+          <option v-for="o in X_KEYS" :key="o.k" :value="o.k">{{ o.label }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>范围</label>
+        <input type="number" v-model.number="xRange.from" step="0.01" class="num" />
+        <span class="tilde">~</span>
+        <input type="number" v-model.number="xRange.to" step="0.01" class="num" />
+      </div>
+      <div class="field">
+        <label>Y 轴</label>
+        <select v-model="outKey" class="sel">
+          <option v-for="o in OUT_KEYS" :key="o.k" :value="o.k">{{ o.label }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>图型</label>
+        <div class="seg">
+          <button v-for="t in TYPES" :key="t.k" class="segbtn"
+                  :class="{ on: chartType === t.k }" @click="chartType = t.k">{{ t.label }}</button>
         </div>
       </div>
-
-      <p class="panel-title" style="margin-top:16px">Y 轴 · 输出变量</p>
-      <select v-model="outKey" style="width:100%">
-        <option v-for="o in OUT_KEYS" :key="o.k" :value="o.k">{{ o.label }}</option>
-      </select>
-
-      <p class="panel-title" style="margin-top:16px">图表类型</p>
-      <div class="types">
-        <button v-for="t in TYPES" :key="t.k" class="btn sm"
-                :class="{ on: chartType === t.k }" @click="chartType = t.k">{{ t.label }}</button>
+      <div class="field">
+        <label>采样</label>
+        <input type="range" v-model.number="steps" min="10" max="200" step="5" class="rng" />
+        <span class="steps-v">{{ steps }}</span>
       </div>
-
-      <div class="slider-row" style="margin-top:16px">
-        <div class="slider-lab"><span>采样点数</span><span class="val">{{ steps }}</span></div>
-        <input type="range" v-model.number="steps" min="10" max="200" step="5" />
+      <div class="spacer"></div>
+      <div class="wp" v-if="curPoint">
+        <b>{{ curPoint.y !== null ? curPoint.y.toFixed(1) : "—" }}<em>{{ curPoint.yUnit }}</em></b>
+        <span class="wp-tag">当前值</span>
       </div>
+    </div>
 
-      <!-- 当前工作点读数（填充左栏空白，同时给出结论） -->
-      <div v-if="curPoint" class="wpcard">
-        <p class="panel-title">当前工作点</p>
-        <div class="wrow">
-          <span>{{ curPoint.xLabel || xKey }}</span>
-          <b>{{ curPoint.x }}<em>{{ curPoint.xUnit }}</em></b>
-        </div>
-        <div class="wrow">
-          <span>{{ curPoint.yLabel }}</span>
-          <b>{{ curPoint.y !== null ? curPoint.y.toFixed(1) : "—" }}<em>{{ curPoint.yUnit }}</em></b>
-        </div>
-        <div class="wnote" v-if="curPoint.y === null">当前值在扫描区间之外</div>
-      </div>
-
-      <p class="note">
-        热力/等高线为二维扫描：X 轴＝所选参数，Y 轴固定为
-        <b style="color:var(--dim)">{{ outKey === 's_f' ? '扭矩 T' : '齿宽 b' }}</b>。
-        改左侧参数界面会实时重绘。
-      </p>
-    </aside>
-
-    <section class="cv-right">
+    <!-- 图表 -->
+    <div class="chartwrap">
       <div ref="chartEl" class="chart"></div>
       <div v-if="busy" class="loading">计算中…</div>
-    </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.cv { display: flex; flex: 1; min-width: 0; min-height: 0; }
-.cv-left {
-  width: 336px; flex-shrink: 0; overflow-y: auto; padding: 16px 18px 40px;
-  border-right: 1px solid var(--line);
-  background: var(--panel2);
+.cv { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+
+/* 工具条 */
+.bar {
+  flex-shrink: 0; display: flex; align-items: center;
+  gap: 9px; padding: 6px 11px;
+  min-height: 38px; box-sizing: border-box;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel2); flex-wrap: nowrap; overflow: hidden;
 }
-.range { margin-top: 10px; }
-.types { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.cv-right { flex: 1; position: relative; min-width: 0; background: var(--panel); }
-.chart { width: 100%; height: 100%; }
-.loading {
-  position: absolute; top: 14px; right: 18px; font-size: 11px; color: var(--dim2);
-  background: var(--panel); padding: 5px 11px; border-radius: 7px;
-  border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+.field { display: flex; align-items: center; gap: 5px; flex: 0 0 auto; }
+.field > label {
+  font-size: 10px; color: var(--dim2); letter-spacing: 0.02em;
+  white-space: nowrap; font-weight: 500;
+}
+.sel { font-size: 11px; padding: 4px 6px; border-radius: 6px; min-width: 78px; max-width: 96px; }
+.num { width: 54px; font-size: 11px; padding: 4px 5px; border-radius: 6px; }
+.tilde { color: var(--dim2); font-size: 10px; }
+
+.seg {
+  display: flex; border: 1px solid var(--line2); border-radius: 6px;
+  overflow: hidden; background: var(--panel); flex: 0 0 auto;
+}
+.segbtn {
+  border: none; background: transparent; font-size: 10.5px;
+  padding: 4.5px 7px; color: var(--dim); cursor: pointer;
+  font-family: inherit; border-right: 1px solid var(--line);
+  transition: background 0.14s, color 0.14s; white-space: nowrap;
+}
+.segbtn:last-child { border-right: none; }
+.segbtn:hover { background: var(--panel3); }
+.segbtn.on {
+  background: var(--brand-soft); color: var(--brand2); font-weight: 600;
 }
 
-/* 当前工作点卡片 */
-.wpcard {
-  margin-top: 18px; padding: 12px 14px;
-  background: var(--panel); border: 1px solid var(--line);
-  border-radius: 9px; box-shadow: var(--shadow-sm);
+.rng { width: 58px; flex: 0 0 auto; }
+.steps-v {
+  font-size: 10.5px; font-family: Consolas, monospace;
+  color: var(--ink); min-width: 20px; font-weight: 600;
 }
-.wrow {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: 4px 0; font-size: 12px; color: var(--dim);
-  border-bottom: 1px solid #f2f5f9;
+.spacer { flex: 1 1 auto; min-width: 4px; }
+
+.wp {
+  display: flex; align-items: baseline; gap: 5px; flex: 0 0 auto;
+  font-size: 10.5px; color: var(--dim); white-space: nowrap;
 }
-.wrow:last-of-type { border-bottom: none; }
-.wrow b {
-  color: var(--ink); font-family: Consolas, monospace;
-  font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+.wp b {
+  font-family: Consolas, monospace; color: var(--ink);
+  font-size: 11.5px; font-variant-numeric: tabular-nums; font-weight: 600;
 }
-.wrow b em { color: var(--dim2); font-style: normal; font-size: 10px; font-weight: 400; margin-left: 3px; }
-.wnote { font-size: 11px; color: var(--warn); margin-top: 7px; }
+.wp em { color: var(--dim2); font-style: normal; font-size: 9px; margin-left: 2px; }
+.wp-tag {
+  font-size: 9.5px; color: var(--dim2); background: var(--panel3);
+  padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line);
+}
+
+/* 图表 */
+.chartwrap { flex: 1; position: relative; min-height: 0; }
+.chart { width: 100%; height: 100%; }
+.loading {
+  position: absolute; top: 10px; right: 14px; font-size: 11px; color: var(--dim2);
+  background: var(--panel); padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+}
 </style>

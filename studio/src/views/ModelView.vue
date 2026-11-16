@@ -178,73 +178,87 @@ function animate() {
 }
 
 /* ---------------- 初始化 ---------------- */
-onMounted(() => {
-  scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xf4f6fa, 20, 48);
+let ro = null;
 
+function fitRenderer() {
+  if (!renderer || !camera || !el.value) return;
   const w = el.value.clientWidth, h = el.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 200);
-  camera.position.set(9, 7.5, 11);
-
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  el.value.appendChild(renderer.domElement);
-
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.07;
-  controls.minDistance = 4;
-  controls.maxDistance = 34;
-  controls.target.set(0, 1.2, 0);
-
-  // 光照（浅色场景：环境光为主，避免过曝）
-  scene.add(new THREE.AmbientLight(0xffffff, 1.55));
-  const key = new THREE.DirectionalLight(0xffffff, 1.75);
-  key.position.set(8, 14, 9);
-  key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
-  key.shadow.camera.near = 1; key.shadow.camera.far = 50;
-  key.shadow.camera.left = -14; key.shadow.camera.right = 14;
-  key.shadow.camera.top = 14; key.shadow.camera.bottom = -14;
-  key.shadow.bias = -0.0012;
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7eadde, 1.0);
-  rim.position.set(-9, 5, -9);
-  scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xffe0b0, 0.55);
-  fill.position.set(4, -4, 7);
-  scene.add(fill);
-
-  // 地面网格
-  const grid = new THREE.GridHelper(26, 26, 0xc3cede, 0xdfe6ef);
-  grid.position.y = -2.2;
-  grid.material.transparent = true;
-  grid.material.opacity = 0.75;
-  scene.add(grid);
-
-  build();
-  animate();
-
-  window.addEventListener("resize", onResize);
-});
-
-function onResize() {
-  if (!renderer || !el.value) return;
-  const w = el.value.clientWidth, h = el.value.clientHeight;
+  if (w < 2 || h < 2) return;
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
+  renderer.setSize(w, h, true);
 }
+
+onMounted(() => {
+  // 容器在 grid 中初始尺寸可能为 0，等一帧拿到真实尺寸再初始化
+  requestAnimationFrame(() => {
+    const w0 = el.value?.clientWidth || 800;
+    const h0 = el.value?.clientHeight || 420;
+
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xf4f6fa, 20, 48);
+
+    camera = new THREE.PerspectiveCamera(40, w0 / h0, 0.1, 200);
+    camera.position.set(10.5, 8.2, 12.5);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w0, h0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    el.value.appendChild(renderer.domElement);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.07;
+    controls.minDistance = 4;
+    controls.maxDistance = 34;
+    controls.target.set(0, 0.95, 0);
+
+    // 光照（浅色场景：环境光为主，避免过曝）
+    scene.add(new THREE.AmbientLight(0xffffff, 1.55));
+    const key = new THREE.DirectionalLight(0xffffff, 1.75);
+    key.position.set(8, 14, 9);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.near = 1; key.shadow.camera.far = 50;
+    key.shadow.camera.left = -14; key.shadow.camera.right = 14;
+    key.shadow.camera.top = 14; key.shadow.camera.bottom = -14;
+    key.shadow.bias = -0.0012;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x7eadde, 1.0);
+    rim.position.set(-9, 5, -9);
+    scene.add(rim);
+    const fill = new THREE.DirectionalLight(0xffe0b0, 0.55);
+    fill.position.set(4, -4, 7);
+    scene.add(fill);
+
+    // 地面网格
+    const grid = new THREE.GridHelper(26, 26, 0xc3cede, 0xdfe6ef);
+    grid.position.y = -2.2;
+    grid.material.transparent = true;
+    grid.material.opacity = 0.75;
+    scene.add(grid);
+
+    build();
+    animate();
+
+    // 尺寸跟随容器（grid 布局、窗口缩放、区域重排都能自适应）
+    ro = new ResizeObserver(fitRenderer);
+    ro.observe(el.value);
+    fitRenderer();
+
+    window.addEventListener("resize", fitRenderer);
+  });
+});
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(raf);
-  window.removeEventListener("resize", onResize);
+  ro?.disconnect();
+  window.removeEventListener("resize", fitRenderer);
   controls?.dispose();
   renderer?.dispose();
-  if (el.value?.contains(renderer?.domElement)) {
+  if (el.value && renderer && el.value.contains(renderer.domElement)) {
     el.value.removeChild(renderer.domElement);
   }
 });
@@ -284,22 +298,25 @@ watch(speed, () => {});
 </template>
 
 <style scoped>
-.mv { flex: 1; position: relative; min-width: 0; background:
-  radial-gradient(1100px 640px at 50% 8%, #ffffff 0%, #eef2f8 62%, #e6ecf4 100%); }
+.mv {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(1100px 640px at 50% 8%, #ffffff 0%, #eef2f8 62%, #e6ecf4 100%);
+}
 .view { position: absolute; inset: 0; }
 .hud {
-  position: absolute; left: 18px; bottom: 16px;
-  display: flex; flex-direction: column; gap: 9px;
+  position: absolute; left: 16px; bottom: 12px; z-index: 12;
+  display: flex; flex-direction: column; gap: 7px;
 }
-.hud .row { display: flex; gap: 6px; }
+.hud .row { display: flex; gap: 5px; }
 .meta {
-  display: flex; gap: 16px; font-size: 10.5px; color: var(--dim2);
+  display: flex; gap: 14px; font-size: 10px; color: var(--dim2);
   font-family: Consolas, monospace;
-  background: rgba(255, 255, 255, 0.78); padding: 5px 10px;
-  border-radius: 7px; border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82); padding: 4px 9px;
+  border-radius: 6px; border: 1px solid var(--line);
   backdrop-filter: blur(6px);
 }
-.axis { position: absolute; right: 20px; top: 18px; text-align: right; }
+.axis { position: absolute; right: 18px; top: 14px; text-align: right; z-index: 12; }
 .ax {
   font-size: 10.5px; letter-spacing: 0.04em; margin-bottom: 5px;
   font-family: Consolas, monospace; font-weight: 500;
