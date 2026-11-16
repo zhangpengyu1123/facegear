@@ -366,7 +366,7 @@ def hefei_simplified(
     b: float, T1_Nmm: float,
     E1: float = 210000.0, nu1: float = 0.3,
     E2: float = 210000.0, nu2: float = 0.3,
-    YFa: float = 1.61, Ysa: float = 1.90,
+    YFa: float = 1.58, Ysa: float = 1.892,
 ) -> dict:
     """何飞等（2023）面齿轮副啮合强度简化公式（原样实现）。
 

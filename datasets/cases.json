@@ -1,0 +1,4267 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "paper-miner / task-3",
+  "unit_system": {
+    "length": "mm",
+    "force": "N",
+    "torque": "N*m",
+    "stress": "MPa",
+    "power": "kW",
+    "speed": "r/min",
+    "angle": "degree",
+    "elastic_modulus": "MPa",
+    "note": "与原论文单位一致(工程 SI), 不做换算; 论文中的 lb-in/ksi 已注明原值"
+  },
+  "radius_convention": "6 篇论文均把面齿轮的内/外半径写成'内径/外径', 本数据集一律按'半径(mm)'存储, 并已用'齿宽 = 外半径 - 内半径'在 3 篇论文中交叉验证",
+  "case_count": 50,
+  "cases": [
+    {
+      "id": "HE2023-FIVE-TEETH",
+      "source": {
+        "paper": "面齿轮副啮合强度的简化计算_何飞",
+        "authors": "何飞, 钱卫香, 付学中, 彭先龙",
+        "year": 2023,
+        "venue": "机械强度 45(5):1192-1198, DOI:10.16579/j.issn.1001.9669.2023.05.024",
+        "pdf": "resources/面齿轮副啮合强度的简化计算_何飞.pdf",
+        "pdf_pages": [
+          5,
+          6
+        ],
+        "section": "3.1 表1 / 3.2 节 / 4.2 节 / 4.3 节"
+      },
+      "case_name": "五齿接触模型算例(T1=1600 N·m):解析法 vs 有限元 vs 简化公式",
+      "method": "Hertz 点接触解析(式15) + 30°切线法齿根弯曲解析(式23,24) + 节锥面简化公式(式32,33) + Abaqus 有限元(五齿模型,159732 节点)",
+      "inputs": {
+        "module_m_mm": 6.35,
+        "z_pinion": 25,
+        "z_shaper": 27,
+        "z_face_gear": 160,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "helix_angle_deg": 0.0,
+        "addendum_coef_ha_star": null,
+        "clearance_coef_c_star": null,
+        "face_gear_inner_radius_mm": 480.0,
+        "face_gear_outer_radius_mm": 560.0,
+        "tooth_width_b_mm": 80.0,
+        "elastic_modulus_E_MPa": 210000.0,
+        "poisson_ratio_nu": 0.3,
+        "transmission_ratio": 6.4,
+        "gear_ratio_note": "i = z2/z1 = 160/25 = 6.4"
+      },
+      "inputs_derived": {
+        "face_gear_pitch_radius_mm": {
+          "value": 508.0,
+          "formula": "m*z2/2",
+          "note": "落在(480,560)内,据此判定表1的'内径/外径'实为半径"
+        },
+        "tooth_width_b_mm": {
+          "value": 80.0,
+          "formula": "R2 - R1 = 560 - 480",
+          "note": "与刘新胜图6.3、任雅丽表2-1的'齿宽=外半径-内半径'规律一致,故 b=80mm"
+        },
+        "equivalent_addendum_ratio_epsilon": {
+          "value": 1.5545,
+          "formula": "式(27), 取 ha*=1",
+          "derived_by": "paper-miner",
+          "note": "论文未给齿顶高系数, 本值依赖 ha*=1 假设; 用其反算 YFa*Ysa 可自洽(见 README)"
+        }
+      },
+      "operating": {
+        "torque_T1_Nm": 1600.0,
+        "speed_rpm": null,
+        "power_kW": null,
+        "load_note": "仅给输入转矩 T1=1600 N·m; 未给转速/功率"
+      },
+      "outputs_expected": {
+        "sigma_contact_analytic_MPa": {
+          "value": 919.7,
+          "page": 5,
+          "section": "3.2 节正文",
+          "confidence": "high"
+        },
+        "sigma_contact_fem_MPa": {
+          "value": 823.2,
+          "page": 5,
+          "section": "3.2 节正文 + 图8",
+          "confidence": "high"
+        },
+        "sigma_contact_analytic_vs_fem_error_percent": {
+          "value": 11.7,
+          "page": 5,
+          "confidence": "high"
+        },
+        "sigma_bending_analytic_MPa": {
+          "value": 85.8,
+          "page": 5,
+          "section": "3.2 节正文 + 图9",
+          "confidence": "high"
+        },
+        "sigma_bending_fem_MPa": {
+          "value": 82.3,
+          "page": 5,
+          "section": "3.2 节正文 + 图9 图例 S.Max.Principal=82.26",
+          "confidence": "high"
+        },
+        "sigma_bending_analytic_vs_fem_error_percent": {
+          "value": 4.3,
+          "page": 5,
+          "confidence": "high"
+        },
+        "sigma_contact_simplified_MPa": {
+          "value": 660.3,
+          "page": 6,
+          "section": "4.2 节式(32)结果",
+          "confidence": "high"
+        },
+        "sigma_contact_simplified_vs_fem_error_percent": {
+          "value": 19.7,
+          "page": 6,
+          "confidence": "high"
+        },
+        "sigma_bending_simplified_MPa": {
+          "value": 76.3,
+          "page": 6,
+          "section": "4.3 节式(33)结果",
+          "confidence": "high"
+        },
+        "sigma_bending_simplified_vs_fem_error_percent": {
+          "value": 7.3,
+          "page": 6,
+          "confidence": "high"
+        }
+      },
+      "estimated_runtime_s": 159732,
+      "confidence": "high",
+      "reproducible": true,
+      "caveats": [
+        "论文未给齿顶高系数与顶隙系数, 计算重合度/弯曲力臂需补充假设(建议 ha*=1, c*=0.25)",
+        "表1列名写'内径/外径', 但 480/560 必为半径(见 inputs_derived), 软件不得当直径使用",
+        "两齿啮合(双齿区)工况: 论文第12个接触点处于两齿啮合状态",
+        "图7(a)接触应力云图图例最大值 1373.41 MPa 是相邻齿对边缘接触的全局最大值, 不是观测齿对值, 不可用作基准"
+      ]
+    },
+    {
+      "id": "HE2023-CASE1-CONTACT",
+      "source": {
+        "paper": "面齿轮副啮合强度的简化计算_何飞",
+        "authors": "何飞 等",
+        "year": 2023,
+        "venue": "机械强度 45(5)",
+        "pdf": "resources/面齿轮副啮合强度的简化计算_何飞.pdf",
+        "pdf_pages": [
+          5
+        ],
+        "section": "3.1 节 表2"
+      },
+      "case_name": "算例1:与面齿轮耐久性试验报告接触应力对比",
+      "method": "五齿有限元模型(与本章同建模方法) vs 文献[15]耐久性试验",
+      "inputs": {
+        "module_m_mm": null,
+        "z_pinion": null,
+        "z_face_gear": null,
+        "pressure_angle_deg": null,
+        "geometry_note": "几何参数取自文献[15]1018-1027 的表1, 何飞论文未复述, 故本算例几何参数缺失"
+      },
+      "operating": {
+        "torque_T1_Nm": 813.0,
+        "torque_original": "7200 lb-in (论文明确换算为约 813 N·m)"
+      },
+      "outputs_expected": {
+        "sigma_contact_reference_MPa": {
+          "value": 1896.1,
+          "origin": "文献[15] 试验/报告值, 原文 275 ksi 换算",
+          "confidence": "high"
+        },
+        "sigma_contact_case1_MPa": {
+          "value": 1855.9,
+          "origin": "何飞论文算例1",
+          "confidence": "high"
+        },
+        "error_percent": {
+          "value": 2.1,
+          "confidence": "high"
+        }
+      },
+      "confidence": "medium",
+      "reproducible": false,
+      "caveats": [
+        "只有一处应力值, 几何参数不可得, 不能作为公式实现的黄金基准; 可作为'量级合理性'检查"
+      ]
+    },
+    {
+      "id": "HE2023-CASE2-BENDING",
+      "source": {
+        "paper": "面齿轮副啮合强度的简化计算_何飞",
+        "authors": "何飞 等",
+        "year": 2023,
+        "venue": "机械强度 45(5)",
+        "pdf": "resources/面齿轮副啮合强度的简化计算_何飞.pdf",
+        "pdf_pages": [
+          5
+        ],
+        "section": "3.1 节 表3"
+      },
+      "case_name": "算例2:与文献[16]弯曲应力对比",
+      "method": "五齿有限元模型 vs 文献[16]4301-4318 表1 参数下的结果",
+      "inputs": {
+        "module_m_mm": null,
+        "z_pinion": null,
+        "z_face_gear": null,
+        "pressure_angle_deg": null,
+        "geometry_note": "几何参数取自文献[16]表1, 何飞论文未复述"
+      },
+      "operating": {
+        "torque_T1_Nm": null,
+        "load_note": "论文未给出算例2的转矩数值"
+      },
+      "outputs_expected": {
+        "sigma_bending_reference_MPa": {
+          "value": 205.5,
+          "confidence": "high"
+        },
+        "sigma_bending_case2_MPa": {
+          "value": 187.2,
+          "confidence": "high"
+        },
+        "error_percent": {
+          "value": 8.9,
+          "confidence": "high"
+        }
+      },
+      "confidence": "medium",
+      "reproducible": false,
+      "caveats": [
+        "几何与工况均不可得, 仅可作量级参考"
+      ]
+    },
+    {
+      "id": "LIU2016-HBZ84-DEMO",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜(导师 李政民卿)",
+        "year": 2016,
+        "venue": "南京航空航天大学硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          69,
+          70,
+          72,
+          73
+        ],
+        "section": "第6章 6.3.1~6.3.6, 图6.2/6.3/6.4/6.5/6.9/6.10"
+      },
+      "case_name": "HB/Z84 当量齿轮法软件自带算例(圆柱齿轮与面齿轮弯曲强度全链)",
+      "method": "航标 HB/Z84.1-84 / HB/Z84.3-84 当量齿轮法弯曲强度(式3-31~3-59) + MATLAB GUI 串联计算",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "addendum_coef_ha_star": 1.0,
+        "clearance_coef_c_star": 0.25,
+        "z_shaper": 25,
+        "z_pinion": 24,
+        "z_face_gear": 50,
+        "shaft_angle_deg": 90.0,
+        "helix_angle_deg": 0.0,
+        "material": "论文未明确牌号; 图6.9 两轮许用接触应力均 1200 MPa, 图6.10 许用弯曲应力 圆柱齿轮380 MPa / 面齿轮350 MPa",
+        "tooth_root_transition_surface_grade_pinion": 7,
+        "tooth_root_transition_surface_grade_face": 8,
+        "cutter_tip_fillet_coef": 0.38,
+        "heat_treatment_code": 1
+      },
+      "inputs_derived_from_gui": {
+        "face_gear_inner_radius_mm": {
+          "value": 93.9681,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "face_gear_outer_radius_mm": {
+          "value": 112.779,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "face_gear_pitch_radius_mm": {
+          "value": 100.0,
+          "page": 69,
+          "figure": "图6.3",
+          "check": "m*z2/2 = 4*50/2 = 100 ✓"
+        },
+        "tooth_width_b_mm": {
+          "value": 18.8112,
+          "page": 69,
+          "figure": "图6.3",
+          "check": "112.779 - 93.9681 = 18.8109 ✓"
+        },
+        "negative_shift_interval": {
+          "value": 0.254899,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "positive_shift_interval": {
+          "value": 0.39147,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "x_limit_negative": {
+          "value": -1.53753,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "x_limit_positive": {
+          "value": 5.0027,
+          "page": 69,
+          "figure": "图6.3"
+        },
+        "contact_position_radius_mm": {
+          "value": 98.0384,
+          "page": 70,
+          "figure": "图6.4"
+        },
+        "contact_point_shift_coef_x": {
+          "value": -0.5,
+          "page": 70,
+          "figure": "图6.4"
+        },
+        "equivalent_transverse_contact_ratio": {
+          "value": 1.77458,
+          "page": 70,
+          "figure": "图6.5"
+        }
+      },
+      "operating": {
+        "speed_rpm": 1000.0,
+        "power_kW": 10.0,
+        "life_h": 100.0,
+        "torque_T1_Nm_derived": {
+          "value": 95.49,
+          "formula": "T = 9550*P/n",
+          "derived_by": "paper-miner"
+        },
+        "applied_load_N": {
+          "value": 2052.78,
+          "page": 72,
+          "figure": "图6.9 计算结果'施加载荷'"
+        }
+      },
+      "load_factors": {
+        "KA_use_factor": {
+          "value": 1.01,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "KV_dynamic_factor": {
+          "value": 2.06112,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "KH_beta_contact_face_load_distribution": {
+          "value": 1.14249,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "KF_beta_bending_face_load_distribution": {
+          "value": 1.05381,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "KH_alpha_contact_transverse_load_sharing": {
+          "value": 1.0,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "KF_alpha_bending_transverse_load_sharing": {
+          "value": 1.0,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "Z_helix_load_distribution": {
+          "value": 1.0,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "base_pitch_deviation_um": {
+          "value": 10,
+          "page": 72,
+          "figure": "图6.9 工况和齿轮精度"
+        },
+        "profile_error_um": {
+          "value": 10,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "lead_error_um": {
+          "value": 9,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "accuracy_grade": {
+          "value": 6,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "input_contact_stress_allowable_MPa": {
+          "value": 1200.0,
+          "page": 72,
+          "figure": "图6.9"
+        },
+        "input_bending_stress_allowable_pinion_MPa": {
+          "value": 380.0,
+          "page": 73,
+          "figure": "图6.10"
+        },
+        "input_bending_stress_allowable_face_MPa": {
+          "value": 350.0,
+          "page": 73,
+          "figure": "图6.10"
+        }
+      },
+      "outputs_expected": {
+        "sigma_bending_pinion_MPa": {
+          "value": 669.613,
+          "page": 73,
+          "figure": "图6.10 计算结果",
+          "confidence": "high"
+        },
+        "safety_factor_bending_pinion": {
+          "value": 0.949826,
+          "page": 73,
+          "figure": "图6.10",
+          "confidence": "high"
+        },
+        "sigma_bending_face_gear_MPa": {
+          "value": 651.765,
+          "page": 73,
+          "figure": "图6.10",
+          "confidence": "high"
+        },
+        "safety_factor_bending_face_gear": {
+          "value": 0.891062,
+          "page": 73,
+          "figure": "图6.10",
+          "confidence": "high"
+        }
+      },
+      "consistency_checks": {
+        "allowed_bending_pinion_MPa": {
+          "value": 636.0,
+          "formula": "SF*sigma = 0.949826*669.613",
+          "note": "与输入的许用弯曲应力 380 MPa 不等, 说明 σFP 经过 YST/YNT/YdrelT/YRrelT/YX 修正(式3-58), 380 是 σFLim 一类的原始值"
+        },
+        "allowed_bending_face_MPa": {
+          "value": 580.9,
+          "formula": "0.891062*651.765"
+        }
+      },
+      "confidence": "high",
+      "reproducible": true,
+      "caveats": [
+        "全部输入/输出均从 MATLAB GUI 截图读取(600dpi 渲染), 数值本身清晰, 但图中未见单位换算过程",
+        "论文未给出 z1 与刀具齿数的关系说明; 本例 z1=24, 刀具齿数=25, 满足'圆柱齿轮齿数少于刀具齿数'",
+        "σF 的绝对值(670/652 MPa)远超许用(380/350 MPa), 安全系数<1, 该算例是演示而非合格设计",
+        "复现该算例需要完整实现式(3-31)~(3-59)(含 YF/YS 的危险截面几何), 是这套论文里最重的复现任务"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G1",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第1组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 2.5,
+        "pressure_angle_deg": 20.0,
+        "z_shaper": 40,
+        "z_pinion": 40,
+        "z_face_gear": 40,
+        "transmission_ratio": 1.0,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 376.021,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 408.15,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 1.06,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 8.5,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 380.01,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 515.589,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 560.41,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 4.65,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 8.71,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 539.56,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 651.593,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 690.55,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 5.31,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 5.98,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 686.19,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G2",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第2组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "z_shaper": 25,
+        "z_pinion": 25,
+        "z_face_gear": 25,
+        "transmission_ratio": 1.0,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 304.841,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 329.68,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 2.08,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 8.15,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 311.18,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 413.812,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 458.08,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 5.0,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 10.7,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 434.5,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 547.651,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 576.21,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 2.79,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 5.21,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 562.93,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G3",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第3组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "z_shaper": 25,
+        "z_pinion": 25,
+        "z_face_gear": 50,
+        "transmission_ratio": 2.0,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 159.206,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 182.87,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 2.06,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 14.86,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 162.49,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 205.23,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 241.72,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 8.32,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 17.78,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 222.31,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 258.947,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 266.76,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 8.89,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 3.02,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 281.97,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G4",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第4组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 22.5,
+        "z_shaper": 25,
+        "z_pinion": 25,
+        "z_face_gear": 40,
+        "transmission_ratio": 1.6,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 175.402,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 195.79,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 3.01,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 11.62,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 180.68,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 231.774,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 244.19,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 4.19,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 5.36,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 241.49,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 280.741,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 302.38,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 5.25,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 7.71,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 295.48,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G5",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第5组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 25.0,
+        "z_shaper": 25,
+        "z_pinion": 25,
+        "z_face_gear": 40,
+        "transmission_ratio": 1.6,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 168.067,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 183.99,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 6.22,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 9.47,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 178.52,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 206.976,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 231.84,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 9.89,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 12.01,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 227.45,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 255.035,
+              "page": 61,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 283.81,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 7.04,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 11.28,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 272.99,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G6",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第6组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "z_shaper": 25,
+        "z_pinion": 25,
+        "z_face_gear": 40,
+        "transmission_ratio": 1.6,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 185.182,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 208.07,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 7.33,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 12.36,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 198.76,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 248.469,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 289.33,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 8.08,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 16.45,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 268.55,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 319.987,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 327.08,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 9.88,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 10.3,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 351.6,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "LIU2016-TEST-G7",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "authors": "刘新胜",
+        "year": 2016,
+        "venue": "南航硕士学位论文",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [
+          60,
+          61,
+          62,
+          63,
+          65,
+          66
+        ],
+        "section": "第5章 表5.1~表5.5"
+      },
+      "case_name": "面齿轮齿根弯曲应力静载试验 第7组(压头点加载, 齿顶齿宽中点)",
+      "method": "HB/Z84 当量齿轮法理论值 + 电阻应变片电测 + 有限元(试验状态)",
+      "inputs": {
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 20.0,
+        "z_shaper": 20,
+        "z_pinion": 20,
+        "z_face_gear": 40,
+        "transmission_ratio": 2.0,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": null,
+        "tooth_width_b_mm": null,
+        "geometry_note": "表5.1 只给 模数/压力角/刀具齿数/传动比/面齿轮齿数; 圆柱齿轮齿数=面齿轮齿数/传动比, 且各组均等于刀具齿数(已核验 40/40,25/25,50/25,40/25,40/25,40/25,40/20)"
+      },
+      "operating": {
+        "load_type": "压头静载(齿顶、齿宽中点), 非传动工况",
+        "head_load_N": [
+          1000,
+          2000,
+          3000
+        ],
+        "strain_gauge": "2.7mm x 2.7mm 应变片基底(见 p64 讨论对读数的影响)"
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 1000,
+            "sigma_bending_test_MPa": {
+              "value": 159.685,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 179.72,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 2.06,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 12.55,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 162.97,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 2000,
+            "sigma_bending_test_MPa": {
+              "value": 210.189,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 245.57,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 9.65,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 16.83,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 230.47,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          },
+          {
+            "head_load_N": 3000,
+            "sigma_bending_test_MPa": {
+              "value": 281.719,
+              "page": 62,
+              "table": "表5.2",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 301.68,
+              "page": 63,
+              "table": "表5.3",
+              "confidence": "high"
+            },
+            "rel_error_theory_vs_test_percent": {
+              "value": 7.23,
+              "page": 65,
+              "table": "表5.4",
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 7.09,
+              "page": 66,
+              "table": "表5.5",
+              "confidence": "high"
+            },
+            "sigma_bending_theory_MPa": {
+              "value": 302.09,
+              "derived": true,
+              "formula": "sigma_theory = sigma_test*(1 + err_percent/100)",
+              "derived_by": "paper-miner",
+              "note": "表5.4 只给百分比, 理论值由该式反算, 精度受百分比取整限制(~±0.005%->±0.03MPa); 论文式(5-1) 的定义带绝对值 |理论-试验|/试验, 但正文(p64)明确 试验值<理论值<有限元值, 故取正号"
+            }
+          }
+        ]
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "载荷是压头静载而不是齿轮传动的名义切向力, 复现理论值需要试验夹具加载模型(压头位置/接触), 不能直接用标准式(3-56)代入 Ft",
+        "论文未给该组试验件的齿宽(表4.1 p47 可能有, 未逐条核对), 复现需要补充",
+        "试验值系统性小于理论值与有限元值(应变片平均效应), 这是论文自身的结论",
+        "论文式(5-1)/式(4-3) 的相对误差定义带绝对值, '理论值'列是由 表5.2×(1+表5.4) 反算的派生量"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-01",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第1组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 25,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 16.0,
+        "composite_tooth_form_factor_YFS": 3.9004,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 8.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "8.0000 vs 表4.3 8.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 2000,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 367,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 16.6,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 427.9,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-02",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第2组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 17,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 32.0,
+        "composite_tooth_form_factor_YFS": 3.6723,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 8.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "8.0000 vs 表4.3 8.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4200,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 140,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 4.3,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 146.0,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-03",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第3组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 25,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 34.0,
+        "composite_tooth_form_factor_YFS": 3.4433,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 11.33,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "11.3333 vs 表4.3 11.33 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8100,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 452,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 0.8,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 455.6,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-04",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第4组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 17,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 38.0,
+        "composite_tooth_form_factor_YFS": 4.176,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 7.6,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "7.6000 vs 表4.3 7.6 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8340,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 210,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 4.9,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 220.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-05",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第5组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 17,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 20.0,
+        "composite_tooth_form_factor_YFS": 3.8846,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 10.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "10.0000 vs 表4.3 10.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 1000,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 139,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 4.0,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 144.6,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-06",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第6组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 25,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 60.0,
+        "composite_tooth_form_factor_YFS": 4.1933,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 15.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "15.0000 vs 表4.3 15.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 9100,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 362,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 2.3,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 370.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-07",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第7组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 17,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 10.0,
+        "composite_tooth_form_factor_YFS": 4.501,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 3.33,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "3.3333 vs 表4.3 3.33 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 1750,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 194,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 12.6,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 218.4,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-08",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第8组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 25,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 30.0,
+        "composite_tooth_form_factor_YFS": 3.6364,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 6.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "6.0000 vs 表4.3 6.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 7640,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 180,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 0.1,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 180.2,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-09",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第9组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 29,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 24.0,
+        "composite_tooth_form_factor_YFS": 4.1189,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 12.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "12.0000 vs 表4.3 12.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 1700,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 272,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 2.4,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 278.5,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-10",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第10组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 21,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 40.0,
+        "composite_tooth_form_factor_YFS": 3.7297,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 10.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "10.0000 vs 表4.3 10.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8700,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 259,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 16.9,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 302.8,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-11",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第11组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 29,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 36.0,
+        "composite_tooth_form_factor_YFS": 3.5757,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 12.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "12.0000 vs 表4.3 12.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 6200,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 368,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 2.2,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 376.1,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-12",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第12组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 21,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 40.0,
+        "composite_tooth_form_factor_YFS": 4.3084,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 8.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "8.0000 vs 表4.3 8.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8140,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 217,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.2,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 223.9,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-13",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第13组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 21,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 16.0,
+        "composite_tooth_form_factor_YFS": 3.5297,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 8.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "8.0000 vs 表4.3 8.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 1800,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 233,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.2,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 240.5,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-14",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第14组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 29,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 36.0,
+        "composite_tooth_form_factor_YFS": 3.8334,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 9.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "9.0000 vs 表4.3 9.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 5800,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 216,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 0.7,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 217.5,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-15",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第15组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 21,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 36.0,
+        "composite_tooth_form_factor_YFS": 4.3084,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 12.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "12.0000 vs 表4.3 12.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4100,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 272,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 7.6,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 292.7,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-CYL-16",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          61,
+          68
+        ],
+        "section": "4.4.1 表4.2 / 4.4.3 表4.3"
+      },
+      "case_name": "点接触面齿轮副中的圆柱齿轮齿根弯曲应力(集中载荷,三齿有限元) 第16组",
+      "method": "ANSYS 三齿模型有限元(集中法向载荷, 齿宽中心齿顶) + 作者公式(4-9) 计算值",
+      "inputs": {
+        "z_pinion": 29,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 80.0,
+        "composite_tooth_form_factor_YFS": 3.3869,
+        "addendum_coef_ha_star": null,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "tooth_width_coef_phi_b": {
+          "value": 16.0,
+          "derived": true,
+          "formula": "phi_b = b/m",
+          "check": "16.0000 vs 表4.3 16.0 ✓"
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8230,
+        "load_note": "三齿模型齿宽中心齿顶施加的集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 162,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high",
+          "note": "表4.3 只有一列应力值; 正文称'采用ANSYS...计算结果如表4.3所示', 故判为有限元值"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.7,
+          "page": 68,
+          "table": "表4.3",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 168.0,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100) (式4-10 定义)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可用作对拍目标; 但'集中载荷+齿宽中心齿顶'的边界条件需要软件支持点加载工况",
+        "作者公式(4-9) σ1 = KA*Ft/(bm)*YFS*(0.1441*phi_b+0.2069) 可供实现"
+      ]
+    },
+    {
+      "id": "JIN2012-FACE-01",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第1组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 100,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 8.0,
+        "composite_tooth_form_factor_YFS": 3.666,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 4.0,
+          "table_value": 4.0,
+          "derived_from_b": 4.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 3200,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 495,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.3,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 511.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-02",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第2组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 68,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 12.0,
+        "composite_tooth_form_factor_YFS": 3.246,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 3.0,
+          "table_value": 3.0,
+          "derived_from_b": 3.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4390,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 162,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 9.7,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 177.7,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-03",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第3组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 125,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 15.0,
+        "composite_tooth_form_factor_YFS": 3.237,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 5.0,
+          "table_value": 5.0,
+          "derived_from_b": 5.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4570,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 239,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 2.7,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 245.5,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-04",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第4组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 85,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 19.0,
+        "composite_tooth_form_factor_YFS": 3.667,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 3.2,
+          "table_value": 3.2,
+          "derived_from_b": 3.8
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 8480,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 215,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.9,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 223.4,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "medium",
+      "reproducible": "partial",
+      "caveats": [
+        "数据冲突: 表4.5 给 b=19mm, m=5 -> phi_b=3.80, 但表4.6 给 phi_b=3.2; 疑表4.5 该行齿宽应为 16.0mm(OCR/印刷错误)"
+      ],
+      "data_conflict": true
+    },
+    {
+      "id": "JIN2012-FACE-05",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第5组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 102,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 8.0,
+        "composite_tooth_form_factor_YFS": 3.418,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 4.0,
+          "table_value": 4.0,
+          "derived_from_b": 4.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 2800,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 380,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 7.7,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 409.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-06",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第6组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 150,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 24.0,
+        "composite_tooth_form_factor_YFS": 3.953,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 6.0,
+          "table_value": 6.0,
+          "derived_from_b": 6.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 5300,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 202,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 6.3,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 214.7,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-07",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第7组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 51,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 7.0,
+        "composite_tooth_form_factor_YFS": 3.969,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 2.3,
+          "table_value": 2.3,
+          "derived_from_b": 2.33
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 5700,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 580,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 7.8,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 625.2,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-08",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第8组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 75,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 11.0,
+        "composite_tooth_form_factor_YFS": 3.423,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 2.2,
+          "table_value": 2.2,
+          "derived_from_b": 2.2
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 3980,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 147,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 7.5,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 158.0,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-09",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第9组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 145,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 10.0,
+        "composite_tooth_form_factor_YFS": 3.952,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 5.0,
+          "table_value": 5.0,
+          "derived_from_b": 5.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 2000,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 317,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 1.8,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 322.7,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-10",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第10组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 105,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 16.0,
+        "composite_tooth_form_factor_YFS": 3.419,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 4.0,
+          "table_value": 4.0,
+          "derived_from_b": 4.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 6240,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 216,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 5.7,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 228.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-11",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第11组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 116,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 25.0,
+        "tooth_width_b_mm": 10.0,
+        "composite_tooth_form_factor_YFS": 3.419,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 3.3,
+          "table_value": 3.3,
+          "derived_from_b": 3.33
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4800,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 340,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 2.0,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 346.8,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-12",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第12组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 84,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 20.0,
+        "tooth_width_b_mm": 10.0,
+        "composite_tooth_form_factor_YFS": 3.939,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 2.0,
+          "table_value": 2.0,
+          "derived_from_b": 2.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4400,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 235,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 18.4,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 278.2,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-13",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第13组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 63,
+        "module_m_mm": 2.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 4.0,
+        "composite_tooth_form_factor_YFS": 3.25,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 2.0,
+          "table_value": 2.0,
+          "derived_from_b": 2.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 2780,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 540,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 9.7,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 592.4,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-14",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第14组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 87,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 10.0,
+        "composite_tooth_form_factor_YFS": 3.666,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 2.5,
+          "table_value": 2.5,
+          "derived_from_b": 2.5
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 3200,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 186,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 8.2,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 201.3,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-15",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第15组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 126,
+        "module_m_mm": 3.0,
+        "pressure_angle_deg": 22.5,
+        "tooth_width_b_mm": 20.0,
+        "composite_tooth_form_factor_YFS": 3.671,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 6.6,
+          "table_value": 6.6,
+          "derived_from_b": 6.67
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 4900,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 279,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 3.1,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 287.6,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-FACE-16",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎(导师 朱如鹏)",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          69,
+          75
+        ],
+        "section": "4.5.1 表4.5 / 4.5.3 表4.6"
+      },
+      "case_name": "面齿轮齿根弯曲应力(集中载荷,三齿有限元) 第16组",
+      "method": "ANSYS 三齿模型有限元 + 作者公式(4-12)",
+      "inputs": {
+        "z_face_gear": 174,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 27.0,
+        "tooth_width_b_mm": 30.0,
+        "composite_tooth_form_factor_YFS": 3.242,
+        "elastic_modulus_E_MPa": 206000.0,
+        "poisson_ratio_nu": 0.3,
+        "shaft_angle_deg": 90.0,
+        "tooth_width_coef_phi_b": {
+          "value": 6.0,
+          "table_value": 6.0,
+          "derived_from_b": 6.0
+        }
+      },
+      "operating": {
+        "normal_load_Fn_N": 9600,
+        "load_note": "三齿模型齿宽中心齿顶集中法向载荷"
+      },
+      "outputs_expected": {
+        "sigma_bending_fem_MPa": {
+          "value": 169,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "rel_error_calc_vs_fem_percent": {
+          "value": 0.8,
+          "page": 75,
+          "table": "表4.6",
+          "confidence": "high"
+        },
+        "sigma_bending_calc_MPa": {
+          "value": 170.4,
+          "derived": true,
+          "formula": "sigma_calc = sigma_fem*(1+err/100)"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "有限元值可对拍, 需支持'齿宽中心齿顶集中载荷'工况"
+      ],
+      "data_conflict": false
+    },
+    {
+      "id": "JIN2012-EXP-CYL",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "authors": "靳广虎",
+        "year": 2012,
+        "venue": "南航博士学位论文",
+        "pdf": "resources/正交面齿轮传动的强度与动力学特性分析研究.pdf",
+        "pdf_pages": [
+          77,
+          78,
+          79,
+          80
+        ],
+        "section": "4.6 节 表4.8/表4.9/表4.10"
+      },
+      "case_name": "圆柱齿轮齿根弯曲应力静载试验(齿顶齿宽中点集中载荷, 5点应变片沿齿宽)",
+      "method": "PLG-100 疲劳试验机静载 + 应变片电测 + 作者公式计算 + 有限元",
+      "inputs": {
+        "z_pinion": 41,
+        "module_m_mm": 5.0,
+        "pressure_angle_deg": 20.0,
+        "addendum_coef_ha_star": 1.0,
+        "clearance_coef_c_star": 0.25,
+        "tooth_width_b_mm": 30.0,
+        "material": "40Cr, 表面渗碳, 齿面硬度 58 HRC",
+        "loading": "压头端面加工梯形凹槽内放 φ4mm 圆棒实现点加载; 载荷作用点为齿顶、齿宽中心",
+        "strain_gauge": "BE120-03AA(11), 基长 2.7x2.7mm, K=2.0, R=120Ω; 沿 30mm 齿宽从中心向两侧每 5mm 一片, 共5点(3# 在齿宽中部)"
+      },
+      "operating": {
+        "head_load_N": [
+          4000,
+          5000,
+          6000
+        ]
+      },
+      "outputs_expected": {
+        "points": [
+          {
+            "head_load_N": 4000,
+            "sigma_bending_test_max_MPa": {
+              "value": 94,
+              "page": 79,
+              "table": "表4.9(试验测试值)",
+              "confidence": "high"
+            },
+            "sigma_bending_calc_MPa": {
+              "value": 107,
+              "page": 79,
+              "table": "表4.9",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 101,
+              "page": 80,
+              "table": "表4.10",
+              "confidence": "high"
+            },
+            "rel_error_calc_vs_test_percent": {
+              "value": 12.1,
+              "page": 79,
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 6.9,
+              "page": 80,
+              "confidence": "high"
+            }
+          },
+          {
+            "head_load_N": 5000,
+            "sigma_bending_test_max_MPa": {
+              "value": 116,
+              "page": 79,
+              "table": "表4.9(试验测试值)",
+              "confidence": "high"
+            },
+            "sigma_bending_calc_MPa": {
+              "value": 134,
+              "page": 79,
+              "table": "表4.9",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 127,
+              "page": 80,
+              "table": "表4.10",
+              "confidence": "high"
+            },
+            "rel_error_calc_vs_test_percent": {
+              "value": 13.4,
+              "page": 79,
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 8.6,
+              "page": 80,
+              "confidence": "high"
+            }
+          },
+          {
+            "head_load_N": 6000,
+            "sigma_bending_test_max_MPa": {
+              "value": 138,
+              "page": 79,
+              "table": "表4.9(试验测试值)",
+              "confidence": "high"
+            },
+            "sigma_bending_calc_MPa": {
+              "value": 161,
+              "page": 79,
+              "table": "表4.9",
+              "confidence": "high"
+            },
+            "sigma_bending_fem_MPa": {
+              "value": 152,
+              "page": 80,
+              "table": "表4.10",
+              "confidence": "high"
+            },
+            "rel_error_calc_vs_test_percent": {
+              "value": 14.3,
+              "page": 79,
+              "confidence": "high"
+            },
+            "rel_error_fem_vs_test_percent": {
+              "value": 9.2,
+              "page": 80,
+              "confidence": "high"
+            }
+          }
+        ],
+        "sigma_across_width_MPa": {
+          "load_4000N": {
+            "1#": 51,
+            "2#": 69,
+            "3#": 94,
+            "4#": 74,
+            "5#": 59,
+            "page": 78,
+            "table": "表4.8"
+          },
+          "load_5000N": {
+            "1#": 68,
+            "2#": 85,
+            "3#": 116,
+            "4#": 93,
+            "5#": 74,
+            "page": 78,
+            "table": "表4.8"
+          },
+          "load_6000N": {
+            "1#": 81,
+            "2#": 104,
+            "3#": 138,
+            "4#": 111,
+            "5#": 86,
+            "page": 78,
+            "table": "表4.8"
+          }
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "静载试验, 载荷通过 φ4mm 圆棒点加载在齿顶齿宽中点, 复现需夹具模型",
+        "表4.8 的跨齿宽分布可用于校验'齿向载荷分布'处理是否正确(理论应为中间最大、两侧对称)"
+      ]
+    },
+    {
+      "id": "LI2018-HERTZ-150Nm",
+      "source": {
+        "paper": "非共轭点接触面齿轮传动的强度设计方法研究",
+        "authors": "李占平(导师 沈云波)",
+        "year": 2018,
+        "venue": "西安工业大学硕士学位论文",
+        "pdf": "resources/非共轭点接触面齿轮传动的强度设计方法研究.pdf",
+        "pdf_pages": [
+          25,
+          32
+        ],
+        "section": "2.2.1.3 表2.1 / 2.4 节式(2.43) 表2.2"
+      },
+      "case_name": "非共轭点接触直齿面齿轮 150 N·m 工况下赫兹接触应力(14 个接触点)",
+      "method": "赫兹点接触解析解 σHmax = 3Fm/(2πab) (式2.43); 内外半径由接触分析求得 RL1=159.5, RL2=194.0",
+      "inputs": {
+        "z_pinion": 23,
+        "z_face_gear": 86,
+        "z_shaper": 24,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "helix_angle_deg": 0.0,
+        "shaft_angle_error_deg": 0.01,
+        "face_gear_inner_radius_mm": 159.5,
+        "face_gear_outer_radius_mm": 194.0,
+        "tooth_width_b_mm": 34.5,
+        "tooth_width_note": "R2-R1=34.5mm; 表3.1 的截面坐标 X 从 -194.0 到 -160.0(=b 34.0mm), 二者相差 0.5mm, 论文内部小不一致"
+      },
+      "operating": {
+        "torque_T1_Nm": 150.0,
+        "speed_rpm": null,
+        "power_kW": null
+      },
+      "outputs_expected": {
+        "sigma_contact_max_MPa": {
+          "value": 1523.981879,
+          "page": 32,
+          "table": "表2.2 第1点",
+          "confidence": "high"
+        },
+        "sigma_contact_min_MPa": {
+          "value": 1172.260804,
+          "page": 32,
+          "table": "表2.2 第9点",
+          "confidence": "high"
+        },
+        "contact_points": [
+          {
+            "x_mm": 1.2039,
+            "y_mm": -0.1004,
+            "z_mm": 174.8356,
+            "ellipse_a_mm": 5.81391,
+            "ellipse_b_mm": 0.4849,
+            "sigma_Hmax_MPa": 1523.981879
+          },
+          {
+            "x_mm": 1.526,
+            "y_mm": -0.721,
+            "z_mm": 174.6032,
+            "ellipse_a_mm": 5.947015,
+            "ellipse_b_mm": 0.503558,
+            "sigma_Hmax_MPa": 1434.669341
+          },
+          {
+            "x_mm": 1.8404,
+            "y_mm": -1.3324,
+            "z_mm": 174.3481,
+            "ellipse_a_mm": 6.070739,
+            "ellipse_b_mm": 0.520395,
+            "sigma_Hmax_MPa": 1359.957549
+          },
+          {
+            "x_mm": 2.1455,
+            "y_mm": -1.9324,
+            "z_mm": 174.0653,
+            "ellipse_a_mm": 6.176881,
+            "ellipse_b_mm": 0.535621,
+            "sigma_Hmax_MPa": 1298.595193
+          },
+          {
+            "x_mm": 2.4392,
+            "y_mm": -2.5185,
+            "z_mm": 173.7508,
+            "ellipse_a_mm": 6.256199,
+            "ellipse_b_mm": 0.549385,
+            "sigma_Hmax_MPa": 1250.008242
+          },
+          {
+            "x_mm": 2.7197,
+            "y_mm": -3.0883,
+            "z_mm": 173.4022,
+            "ellipse_a_mm": 6.300201,
+            "ellipse_b_mm": 0.561805,
+            "sigma_Hmax_MPa": 1213.837823
+          },
+          {
+            "x_mm": 2.985,
+            "y_mm": -3.6397,
+            "z_mm": 173.0204,
+            "ellipse_a_mm": 6.303556,
+            "ellipse_b_mm": 0.572973,
+            "sigma_Hmax_MPa": 1189.545188
+          },
+          {
+            "x_mm": 3.2338,
+            "y_mm": -4.171,
+            "z_mm": 172.6095,
+            "ellipse_a_mm": 6.265978,
+            "ellipse_b_mm": 0.582969,
+            "sigma_Hmax_MPa": 1176.159653
+          },
+          {
+            "x_mm": 3.4652,
+            "y_mm": -4.6818,
+            "z_mm": 172.1769,
+            "ellipse_a_mm": 6.19235,
+            "ellipse_b_mm": 0.591862,
+            "sigma_Hmax_MPa": 1172.260804
+          },
+          {
+            "x_mm": 3.6794,
+            "y_mm": -5.172,
+            "z_mm": 171.7317,
+            "ellipse_a_mm": 6.091057,
+            "ellipse_b_mm": 0.59971,
+            "sigma_Hmax_MPa": 1176.160352
+          },
+          {
+            "x_mm": 3.8768,
+            "y_mm": -5.6424,
+            "z_mm": 171.2834,
+            "ellipse_a_mm": 5.971549,
+            "ellipse_b_mm": 0.606554,
+            "sigma_Hmax_MPa": 1186.161225
+          },
+          {
+            "x_mm": 4.0585,
+            "y_mm": -6.0942,
+            "z_mm": 170.8407,
+            "ellipse_a_mm": 5.842406,
+            "ellipse_b_mm": 0.612423,
+            "sigma_Hmax_MPa": 1200.762803
+          },
+          {
+            "x_mm": 4.2259,
+            "y_mm": -6.5286,
+            "z_mm": 170.4109,
+            "ellipse_a_mm": 5.710389,
+            "ellipse_b_mm": 0.617328,
+            "sigma_Hmax_MPa": 1218.760809
+          },
+          {
+            "x_mm": 4.3804,
+            "y_mm": -6.9468,
+            "z_mm": 169.9997,
+            "ellipse_a_mm": 5.580306,
+            "ellipse_b_mm": 0.62127,
+            "sigma_Hmax_MPa": 1239.258574
+          }
+        ],
+        "note_units": "表2.2 原表 σH 列标题为 'σmax/(MPa)', a/b 无单位标注但按接触椭圆长短半轴判为 mm"
+      },
+      "confidence": "high",
+      "reproducible": true,
+      "caveats": [
+        "需要先由齿面方程 + 赫兹理论求出 14 个接触点的主曲率, 才能复现 a/b 与 σH; 内半径 159.5 由程序求得而非给定",
+        "表3.1 的截面坐标跨度(34.0mm)与 R2-R1(34.5mm) 有 0.5mm 出入"
+      ]
+    },
+    {
+      "id": "LI2018-BENDING-1000N",
+      "source": {
+        "paper": "非共轭点接触面齿轮传动的强度设计方法研究",
+        "authors": "李占平",
+        "year": 2018,
+        "venue": "西安工业大学硕士学位论文",
+        "pdf": "resources/非共轭点接触面齿轮传动的强度设计方法研究.pdf",
+        "pdf_pages": [
+          45,
+          46,
+          47
+        ],
+        "section": "第3章 表3.1/表3.2/表3.3"
+      },
+      "case_name": "面齿轮齿根弯曲应力(悬臂梁抛物线法, Wn=1000N, 沿齿宽 8 个截面)",
+      "method": "内切抛物线法(30°切线等效) + 齿形系数 x 拟合式(3.11) + 应力集中系数 YS",
+      "inputs": {
+        "z_pinion": 23,
+        "z_face_gear": 86,
+        "z_shaper": 24,
+        "module_m_mm": 4.0,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "helix_angle_deg": 0.0,
+        "shaft_angle_error_deg": 0.01,
+        "face_gear_inner_radius_mm": 159.5,
+        "face_gear_outer_radius_mm": 194.0,
+        "tooth_width_b_mm": 34.5,
+        "tooth_width_note": "R2-R1=34.5mm; 表3.1 的截面坐标 X 从 -194.0 到 -160.0(=b 34.0mm), 二者相差 0.5mm, 论文内部小不一致",
+        "load_Wn_N": 1000.0,
+        "contact_ellipse_a_mm": 5.8139,
+        "num_sections_total": 21,
+        "num_sections_used": 8,
+        "x_factor_fit": "-6.2018*(X/b) + 8.0689  (式3.11, p47)"
+      },
+      "operating": {
+        "normal_load_Wn_N": 1000.0,
+        "speed_rpm": null
+      },
+      "outputs_expected": {
+        "sections": [
+          {
+            "X_over_b": "1/21",
+            "X_mm": -194.0,
+            "alpha_n_rad": 0.5691,
+            "Wr_N": -533.1335,
+            "Wt_N": 846.0311,
+            "x_factor": 8.0185,
+            "YS": 2.9279,
+            "sigma_t_MPa": 187.2391
+          },
+          {
+            "X_over_b": "4/21",
+            "X_mm": -188.9,
+            "alpha_n_rad": 0.5222,
+            "Wr_N": -497.7477,
+            "Wt_N": 867.3219,
+            "x_factor": 6.9361,
+            "YS": 2.7331,
+            "sigma_t_MPa": 202.228
+          },
+          {
+            "X_over_b": "7/21",
+            "X_mm": -183.8,
+            "alpha_n_rad": 0.4754,
+            "Wr_N": -459.7379,
+            "Wt_N": 888.0547,
+            "x_factor": 5.9222,
+            "YS": 2.5444,
+            "sigma_t_MPa": 221.2267
+          },
+          {
+            "X_over_b": "10/21",
+            "X_mm": -178.7,
+            "alpha_n_rad": 0.4286,
+            "Wr_N": -418.9603,
+            "Wt_N": 908.0045,
+            "x_factor": 4.9768,
+            "YS": 2.3619,
+            "sigma_t_MPa": 246.3341
+          },
+          {
+            "X_over_b": "13/21",
+            "X_mm": -173.6,
+            "alpha_n_rad": 0.3818,
+            "Wr_N": -375.6518,
+            "Wt_N": 926.7609,
+            "x_factor": 4.1024,
+            "YS": 2.1863,
+            "sigma_t_MPa": 281.4904
+          },
+          {
+            "X_over_b": "16/21",
+            "X_mm": -168.5,
+            "alpha_n_rad": 0.3349,
+            "Wr_N": -329.7134,
+            "Wt_N": 944.0811,
+            "x_factor": 3.2974,
+            "YS": 2.0175,
+            "sigma_t_MPa": 334.7218
+          },
+          {
+            "X_over_b": "19/21",
+            "X_mm": -163.4,
+            "alpha_n_rad": 0.2881,
+            "Wr_N": -281.3494,
+            "Wt_N": 959.6054,
+            "x_factor": 2.5636,
+            "YS": 1.8561,
+            "sigma_t_MPa": 425.8348
+          },
+          {
+            "X_over_b": "21/21",
+            "X_mm": -160.0,
+            "alpha_n_rad": 0.2569,
+            "Wr_N": -247.9853,
+            "Wt_N": 968.7638,
+            "x_factor": 2.1151,
+            "YS": 1.7531,
+            "sigma_t_MPa": 534.4916
+          }
+        ],
+        "sigma_t_range_MPa": [
+          187.2391,
+          534.4916
+        ],
+        "note_units": "表3.2 的 αn 列标题为 'αn/(0)' 即角度(论文写作 0.5691 等数值, 疑为 rad 或特殊定义), Wr/Wt 单位 N; 表3.3 σt 单位 MPa"
+      },
+      "confidence": "high",
+      "reproducible": true,
+      "caveats": [
+        "αn 列单位在原文标注混乱('/(0)'), 数值 0.2569~0.5691 更像是 rad 弧度量",
+        "弯曲应力沿齿宽由大端(187 MPa)到小端(534 MPa)单调增大, 与'载荷点逐渐靠近齿顶'一致"
+      ]
+    },
+    {
+      "id": "REN2009-HERTZ",
+      "source": {
+        "paper": "某正交直齿面齿轮传动系接触分析_任雅丽",
+        "authors": "任雅丽(导师 李强, 副导师 陈继刚)",
+        "year": 2009,
+        "venue": "燕山大学硕士学位论文",
+        "pdf": "resources/某正交直齿面齿轮传动系接触分析_任雅丽.pdf",
+        "pdf_pages": [
+          27,
+          60,
+          61,
+          71,
+          72
+        ],
+        "section": "第2章 表2-1 / 第4章 / 第5章 式(5-7)~(5-11)"
+      },
+      "case_name": "正交直齿面齿轮接触应力(标准齿轮-齿条当量法, 式5-11)",
+      "method": "把面齿轮当量为齿条, 用标准直齿轮接触应力公式 σH = ZH*ZE*Zε*Zβ*sqrt(Ft(u+1)/(d1*b*u))",
+      "inputs": {
+        "module_m_mm": 6.35,
+        "z_pinion": 25,
+        "z_face_gear": 160,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "addendum_coef_ha_star": 1.2,
+        "clearance_coef_c_star": 0.25,
+        "tooth_width_b_mm": 88.0,
+        "face_gear_inner_radius_mm": 471.0,
+        "face_gear_outer_radius_mm": 559.0,
+        "pinion_tooth_width_mm": 90.0,
+        "blank_height_mm": 50.0,
+        "gear_ratio_u": 6.4,
+        "d1_mm": 158.75
+      },
+      "operating": {
+        "speed_rpm": 400.0,
+        "power_kW": 1000.0,
+        "load_factor_K": 1.119,
+        "torque_T_Nm_as_printed": 47746.0,
+        "torque_check": {
+          "value": 23873.0,
+          "formula": "T = 9550*P/n",
+          "note": "论文印刷 T=47746 N·m, 与 P/n 计算的 23873 N·m 相差 2 倍, 论文未说明"
+        },
+        "Fn_as_printed_N": 331.8,
+        "Fn_check": {
+          "value": 331800.0,
+          "note": "用式(4-3) 时功率 kW 与分度圆直径 mm 混用导致量级差 1000 倍(按物理推算应为 ~3.3e5 N), 论文随后又称'取集中力为100N'用于有限元模型"
+        }
+      },
+      "outputs_expected": {
+        "sigma_contact_MPa": {
+          "value": 317.434,
+          "page": 72,
+          "section": "式(5-11)",
+          "confidence": "medium",
+          "note": "论文写作 317.434 MPa ≈ 317 MPa"
+        },
+        "intermediate_ZH": {
+          "value": 2.285,
+          "page": 72
+        },
+        "intermediate_Zeps": {
+          "value": 0.9,
+          "page": 72
+        },
+        "intermediate_Zbeta": {
+          "value": 1.0,
+          "page": 72
+        },
+        "intermediate_213.2436": {
+          "value": 213.2436,
+          "page": 72,
+          "note": "OCR 顺序被打乱, 与 0.72385 的具体归属无法确定"
+        }
+      },
+      "confidence": "low",
+      "reproducible": false,
+      "caveats": [
+        "论文内部量纲/数值不自洽(T 与 P/n 差 2 倍; Fn 差 1000 倍), 不能作为黄金基准",
+        "但几何参数表(表2-1)本身是完整且可信的, 可与其他论文同族参数(何飞表1)交叉验证",
+        "可作为'面齿轮当量齿条法'的趋势参考"
+      ]
+    },
+    {
+      "id": "HUIRU2022-OPT-A",
+      "source": {
+        "paper": "直齿面齿轮副多目标优化设计计算机辅助优化",
+        "authors": "刘慧茹(导师 周元生)",
+        "year": 2022,
+        "venue": "中南大学硕士学位论文",
+        "pdf": "resources/直齿面齿轮副多目标优化设计计算机辅助优化.pdf",
+        "pdf_pages": [
+          49,
+          50,
+          51
+        ],
+        "section": "第4章 4.3 节 表4-4/表4-6/表4-7/表4-8"
+      },
+      "case_name": "直齿面齿轮副抛物线修形优化 Pareto 方案: 几何传动误差最对称(OF1 最小)",
+      "method": "轻载数值仿真(有限元 TCA/LTCA 型) 求最大接触应力",
+      "inputs": {
+        "module_m_mm": 3.9,
+        "z_pinion": 21,
+        "z_face_gear": 142,
+        "z_shaper": 22,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "pinion_tooth_width_B1_mm": 55.0,
+        "face_gear_inner_radius_mm": 253.5,
+        "face_gear_outer_radius_mm": 305.0,
+        "elastic_modulus_E_MPa": 206800.0,
+        "poisson_ratio_nu": 0.29,
+        "modification_model": "面齿轮与刀具抛物线修形 + 综合修形小轮",
+        "opt_algorithm": "ULH 实验设计(18) + NSGA-II(交叉0.9, 变异0.1, 50代, 共900次数值计算) + RSM 近似模型",
+        "modification_u0_mm": 1.2,
+        "modification_ar": 0.0092,
+        "modification_ae": 0.0075
+      },
+      "operating": {
+        "torque_T1_Nm": 100.0,
+        "load_note": "小轮输入转矩 100 N·m(轻载数值仿真)"
+      },
+      "outputs_expected": {
+        "sigma_contact_max_MPa": {
+          "value": 692.3,
+          "page": 50,
+          "section": "正文最优解描述",
+          "confidence": "high"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "抛物线两端较对称, 接触区偏离齿面中部但无边缘接触",
+        "论文未给接触应力的具体算法公式(为商业软件/自编有限元), 只能作为'同参数不同修形'的相对基准",
+        "内半径 253.5/外半径 305 标注为 L1/L2(半径), 齿宽 51.5mm"
+      ]
+    },
+    {
+      "id": "HUIRU2022-OPT-B",
+      "source": {
+        "paper": "直齿面齿轮副多目标优化设计计算机辅助优化",
+        "authors": "刘慧茹(导师 周元生)",
+        "year": 2022,
+        "venue": "中南大学硕士学位论文",
+        "pdf": "resources/直齿面齿轮副多目标优化设计计算机辅助优化.pdf",
+        "pdf_pages": [
+          49,
+          50,
+          51
+        ],
+        "section": "第4章 4.3 节 表4-4/表4-6/表4-7/表4-8"
+      },
+      "case_name": "直齿面齿轮副抛物线修形优化 Pareto 方案: 接触区域最靠齿面中部(OF2 最小)",
+      "method": "轻载数值仿真(有限元 TCA/LTCA 型) 求最大接触应力",
+      "inputs": {
+        "module_m_mm": 3.9,
+        "z_pinion": 21,
+        "z_face_gear": 142,
+        "z_shaper": 22,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "pinion_tooth_width_B1_mm": 55.0,
+        "face_gear_inner_radius_mm": 253.5,
+        "face_gear_outer_radius_mm": 305.0,
+        "elastic_modulus_E_MPa": 206800.0,
+        "poisson_ratio_nu": 0.29,
+        "modification_model": "面齿轮与刀具抛物线修形 + 综合修形小轮",
+        "opt_algorithm": "ULH 实验设计(18) + NSGA-II(交叉0.9, 变异0.1, 50代, 共900次数值计算) + RSM 近似模型",
+        "modification_u0_mm": 0.025,
+        "modification_ar": 0.0042,
+        "modification_ae": 0.002
+      },
+      "operating": {
+        "torque_T1_Nm": 100.0,
+        "load_note": "小轮输入转矩 100 N·m(轻载数值仿真)"
+      },
+      "outputs_expected": {
+        "sigma_contact_max_MPa": {
+          "value": 727.8,
+          "page": 50,
+          "section": "正文最优解描述",
+          "confidence": "high"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "接触区较 a 更靠中部, 无边缘接触, 接触应力三种方案中最大",
+        "论文未给接触应力的具体算法公式(为商业软件/自编有限元), 只能作为'同参数不同修形'的相对基准",
+        "内半径 253.5/外半径 305 标注为 L1/L2(半径), 齿宽 51.5mm"
+      ]
+    },
+    {
+      "id": "HUIRU2022-OPT-C",
+      "source": {
+        "paper": "直齿面齿轮副多目标优化设计计算机辅助优化",
+        "authors": "刘慧茹(导师 周元生)",
+        "year": 2022,
+        "venue": "中南大学硕士学位论文",
+        "pdf": "resources/直齿面齿轮副多目标优化设计计算机辅助优化.pdf",
+        "pdf_pages": [
+          49,
+          50,
+          51
+        ],
+        "section": "第4章 4.3 节 表4-4/表4-6/表4-7/表4-8"
+      },
+      "case_name": "直齿面齿轮副抛物线修形优化 Pareto 方案: 接触应力最小",
+      "method": "轻载数值仿真(有限元 TCA/LTCA 型) 求最大接触应力",
+      "inputs": {
+        "module_m_mm": 3.9,
+        "z_pinion": 21,
+        "z_face_gear": 142,
+        "z_shaper": 22,
+        "pressure_angle_deg": 25.0,
+        "shaft_angle_deg": 90.0,
+        "pinion_tooth_width_B1_mm": 55.0,
+        "face_gear_inner_radius_mm": 253.5,
+        "face_gear_outer_radius_mm": 305.0,
+        "elastic_modulus_E_MPa": 206800.0,
+        "poisson_ratio_nu": 0.29,
+        "modification_model": "面齿轮与刀具抛物线修形 + 综合修形小轮",
+        "opt_algorithm": "ULH 实验设计(18) + NSGA-II(交叉0.9, 变异0.1, 50代, 共900次数值计算) + RSM 近似模型",
+        "modification_u0_mm": 0.426,
+        "modification_ar": 0.0059,
+        "modification_ae": 0.005
+      },
+      "operating": {
+        "torque_T1_Nm": 100.0,
+        "load_note": "小轮输入转矩 100 N·m(轻载数值仿真)"
+      },
+      "outputs_expected": {
+        "sigma_contact_max_MPa": {
+          "value": 676.08,
+          "page": 51,
+          "section": "正文最优解描述",
+          "confidence": "high"
+        }
+      },
+      "confidence": "high",
+      "reproducible": "partial",
+      "caveats": [
+        "接触区较靠中部, 无边缘接触; 原表写作 676.08PMa(应为 MPa)",
+        "论文未给接触应力的具体算法公式(为商业软件/自编有限元), 只能作为'同参数不同修形'的相对基准",
+        "内半径 253.5/外半径 305 标注为 L1/L2(半径), 齿宽 51.5mm"
+      ]
+    }
+  ]
+}

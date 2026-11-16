@@ -1,0 +1,539 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "paper-miner / task-3",
+  "unit_system": {
+    "length": "mm",
+    "force": "N",
+    "torque": "N*m (N·m)",
+    "stress": "MPa",
+    "elastic_modulus": "MPa",
+    "line_load": "N/mm",
+    "mesh_stiffness": "N/(mm·um)",
+    "angle": "degree (°), 公式内三角函数取弧度",
+    "note": "与原论文单位一致(工程 SI)。论文中出现的 lb-in、ksi 保留原值并在出处注明换算。"
+  },
+  "chart_digitization_policy": "论文中只有图没有表的系数(如 何飞 图2/图4)按 600~900dpi 渲染后目视读取, 一律标 confidence=low 并给出读取方法与精度估计; 凡能由论文两个数值反算校验的, 额外给出 cross_check。",
+
+  "tables": [
+    {
+      "id": "HE2023-FORMULA-CHAIN",
+      "name": "何飞(2023) 面齿轮副接触应力/弯曲应力解析与简化公式链",
+      "source": {
+        "paper": "面齿轮副啮合强度的简化计算_何飞",
+        "venue": "机械强度 2023, 45(5): 1192-1198",
+        "pdf": "resources/面齿轮副啮合强度的简化计算_何飞.pdf",
+        "pdf_pages": [2, 3, 4, 6],
+        "journal_pages": [1193, 1194, 1195, 1197],
+        "section": "第1~4章"
+      },
+      "entries": [
+        {
+          "eq": "(3)",
+          "name": "小齿轮/插齿刀主曲率",
+          "formula": "k_i1 = -2/(N_i*theta_i*cos(alpha));  k_i2 = 0",
+          "page": 2
+        },
+        {
+          "eq": "(4)",
+          "name": "主方向夹角",
+          "formula": "gamma = 0.5*arctan(-2*N2/(Ns*cos(alpha)))",
+          "page": 2,
+          "note": "N2=160, Ns=27, alpha=25° 时 gamma≈-42.8°, sin(2gamma)≈-0.997"
+        },
+        {
+          "eq": "(5)(6)",
+          "name": "面齿轮主曲率 k21, k22 与 a13/a23/a33",
+          "formula": "k21,k22 = 0.5*(-2/(Ns*thetas*cos(alpha)) + (a13^2+a23^2)/a33 ∓ 2*a13*a23/a33*sin(2*gamma));  a13 = -tan(alpha)/thetas;  a23 = Ns*cos(alpha)/N2;  a33 = Ns^3/(2*N2^2)*(sin(alpha)*cos^2(alpha) - thetas*cos^3(alpha)) + Ns*sin^2(alpha)/(2*thetas*cos(alpha))",
+          "page": 2,
+          "note": "论文声明曲率推导时按'单位载荷+单位模数'归一, 最后公式再补回载荷与模数"
+        },
+        {
+          "eq": "(7)(10)",
+          "name": "多齿载荷分配系数",
+          "formula": "c_i = F_i/(T1/(0.5*m*N1*cos(alpha)));  双齿啮合: F1 = 2*T1/(m*N1*cos(alpha))*(dphi2-dphi1+zeta2)/(zeta1+zeta2), F2 对称",
+          "page": 3
+        },
+        {
+          "eq": "(13)(14)",
+          "name": "接触椭圆系数 A, B",
+          "formula": "A = 0.5*(k11+k12+k21+k22);  B = 0.5*sqrt(n1^2+n2^2+2*n1*n2*cos(2*gamma)), n1=k11-k12, n2=k21-k22",
+          "page": 3
+        },
+        {
+          "eq": "(15)",
+          "name": "全齿高接触应力解析式",
+          "formula": "sigma_c = (1.5F)^(1/3)/(pi*alpha_c*beta) * [ 2A / ((1-nu1^2)/E1 + (1-nu2^2)/E2) ]^(2/3)",
+          "page": 3,
+          "note": "原文印刷为 '[m^2 A / (...)]^(2/3)' 形式; 按量纲分析(m^2 应为 2A)与 ISO 赫兹点接触式复原, 属 paper-miner 重建, confidence=medium"
+        },
+        {
+          "eq": "(22)",
+          "name": "应力修正系数 Ysa",
+          "formula": "Y_sa = (1.2 + 0.13*L_a) * q^( L_a/(1.12*L_a + 2.3) );  L_a = S_F/h_F,  q = 0.5*S_F/rho",
+          "page": 4,
+          "value": {"exponent_law": "1.12"},
+          "note": "★ 与 ISO 6336-3 / 刘新胜式(3-43) 的 1.21 不一致: 1/(1.21+2.3/L) = L/(1.21L+2.3)。何飞写作 1.12, 疑印刷错位(12/21), 建议实现取 1.21 并做差异说明"
+        },
+        {
+          "eq": "(23)(24)",
+          "name": "齿根弯曲应力解析式与齿形系数",
+          "formula": "sigma_b = (F*cos(alpha)/(b*m)) * YFa * Ysa;  YFa = 6*h_F*m*cos(alpha_F)/(S_F^2*cos(alpha))",
+          "page": 4
+        },
+        {
+          "eq": "(25)(26)(27)",
+          "name": "面齿轮副重合度",
+          "formula": "eps = dphi1/(2*pi/N1);  dphi1 = theta_a1 - (rs - m - d - rb1*cos(alpha))/(rb1*sin(alpha));  theta_a1 = sqrt(ra1^2-rb1^2)/rb1;  d = (rbs-rb1)/cos(alpha);  化简: eps = [theta_a1*N1*sin(alpha)*cos(alpha) - (N1-2-N1*cos^2(alpha))]/(2*pi*sin(alpha)*cos(alpha))",
+          "page": 6,
+          "cross_check": {
+            "input": "m=6.35, N1=25, alpha=25°, ha*=1",
+            "computed": 1.5545,
+            "note": "由 paper-miner 代入式(27) 得 1.5545; 该值与反算的 YFa*Ysa 自洽(见 HE2023-YFA-YSA-CROSSCHECK)"
+          }
+        },
+        {
+          "eq": "(29)(30)",
+          "name": "节锥面简化 A, B",
+          "formula": "A = (Ns+N1)*m2s^2*cos^2(alpha)/(N1*Ns*sin(alpha));  B = sqrt( 1/(N1^2*sin^2(alpha)) + 4*m2s^2/(Ns^2*tan^2(alpha)*sin^2(2*gamma)) + Z_H );  Z_H = 4*m2s/(N1*Ns*sin(alpha)*tan(alpha)*tan(2*gamma));  m2s = Ns/N2",
+          "page": 6
+        },
+        {
+          "eq": "(31)",
+          "name": "法向载荷与转矩",
+          "formula": "F = 2*T1/(m*N1*cos(alpha))",
+          "page": 6
+        },
+        {
+          "eq": "(32)",
+          "name": "接触应力简化公式",
+          "formula": "sigma_c = cbrt( 12*T1*A^2/(m^3*Z_E^2*N1*cos(alpha)) ) * 1/(pi*alpha_c*beta*eps);  Z_E = (1-nu1^2)/E1 + (1-nu2^2)/E2",
+          "page": 6,
+          "note": "A 用式(29) 的单位模数结果代入(数值上等价 A_actual*m), 故 m^3 出现在分母; 量纲按论文数值口径"
+        },
+        {
+          "eq": "(33)",
+          "name": "弯曲应力简化公式",
+          "formula": "sigma_b = 2*T1/(b*m^2*N1*eps) * YFa * Ysa",
+          "page": 6,
+          "cross_check": {
+            "input": "T1=1600 N·m, b=80mm, m=6.35, N1=25, eps=1.5545, YFa≈1.609(读图), Ysa≈1.86(读图插值)",
+            "computed_MPa": 77.1,
+            "paper_MPa": 76.3,
+            "deviation_percent": 1.0,
+            "conclusion": "式(33) 与 b=80mm、eps≈1.55 的解释可复现论文 76.3 MPa(偏差 1%), 说明 何飞 表1 的'内径/外径'确为半径且 b=R2-R1"
+          }
+        }
+      ],
+      "confidence": "medium",
+      "notes": [
+        "式(15)/(32) 的印刷形式存在下标/指数混乱, 已给出量纲一致的复原形式",
+        "图2(接触椭圆长/短轴计算系数 alpha_c, beta 与 A,B 的关系曲线)未数字化: 论文把 alpha_c, beta 做成 A-B 平面上的曲线族, 需要实现者自己生成(E(e) 第二类椭圆积分), 本数据集不提供读数"
+      ]
+    },
+
+    {
+      "id": "HE2023-FIG4-YFA-YSA",
+      "name": "何飞(2023) 图4 面齿轮弯曲应力计算系数 YFa / Ysa 曲线数字化",
+      "source": {
+        "paper": "面齿轮副啮合强度的简化计算_何飞",
+        "pdf_pages": [4],
+        "journal_page": 1195,
+        "figure": "图4 面齿轮弯曲应力计算系数 (a)α=20° (b)α=25° (c)α=30°"
+      },
+      "structure": {
+        "x_axis": "传动比 N2/Ns, 范围 4~20",
+        "curves": "每条曲线对应一个插齿刀齿数 Ns ∈ {18, 22, 25, 26, 30, 34, 38, 42, 46, 50}; 曲线族条件为 N1 = Ns - 2",
+        "left_axis": "YFa 齿形系数",
+        "right_axis": "Ysa 应力修正系数"
+      },
+      "digitized": {
+        "alpha_25deg": {
+          "Ysa_listed_in_chart_at_ratio_4": {
+            "values_top_to_bottom": [2.110, 2.069, 2.028, 1.987, 1.946, 1.905, 1.864, 1.823, 1.782, 1.741],
+            "mapping_assumed": "值与 Ns 单调负相关, 按图例顺序 Ns=18,22,25,26,30,34,38,42,46,50 依序对应(大 Ysa ↔ 小 Ns)",
+            "mapping_confidence": "low",
+            "note": "图例只给线型不给数值, 与曲线的符号/颜色对应关系在 300dpi 下不可辨, 故映射为推断"
+          },
+          "YFa_read_at_ratio_4": {
+            "values_top_to_bottom": [1.620, 1.6155, 1.6135, 1.612, 1.6100, 1.6085, 1.6065, 1.6045, 1.6025, 1.6005],
+            "read_accuracy": "±0.0005 (轴刻度间隔 0.0005/0.005)",
+            "note": "同样按 Ns 由小到大 从上到下"
+          },
+          "reading_at_operating_point_of_HE2023-FIVE-TEETH": {
+            "ratio_N2_over_Ns": 5.926,
+            "Ns": 27,
+            "YFa": {"value": 1.609, "uncertainty": 0.001},
+            "Ysa": {"value": 1.86, "uncertainty": 0.02},
+            "YFa_times_Ysa": {"value": 2.99, "uncertainty": 0.05},
+            "note": "Ns=27 不在图例曲线上, 按 Ns=26 与 Ns=30 两条曲线线性插值(1/4 权重)"
+          }
+        },
+        "alpha_20deg": {
+          "Ysa_listed_in_chart_at_ratio_4": [2.020, 1.983, 1.965, 1.942, 1.918, 1.872, 1.835, 1.798, 1.761, 1.724],
+          "YFa_axis_range": "1.780~1.792 (未逐条读数)"
+        },
+        "alpha_30deg": {
+          "YFa_axis_range": "1.415~1.450",
+          "Ysa_axis_range": "1.700~2.210",
+          "note": "未逐条数字化"
+        }
+      },
+      "confidence": "low",
+      "method": "PyMuPDF 600dpi 裁剪渲染 + read_image 目视读取; 精度受图像缩放(2481→2002px)限制",
+      "recommended_use": "不要直接用本表读数做硬性断言; 建议实现后用 HE2023-FIVE-TEETH 算例的 σb=76.3 MPa 反标定 YFa*Ysa, 再回来核对本表"
+    },
+
+    {
+      "id": "HE2023-YFA-YSA-CROSSCHECK",
+      "name": "何飞(2023) 弯曲应力的系数反算(交叉校验)",
+      "derivation": {
+        "given": {
+          "sigma_b_simplified_MPa": 76.3,
+          "T1_Nm": 1600,
+          "b_mm": 80,
+          "m_mm": 6.35,
+          "N1": 25,
+          "eps": 1.5545
+        },
+        "formula": "YFa*Ysa = sigma_b * b*m^2*N1*eps / (2*T1)  [由式(33) 反解]",
+        "base_term_MPa": "2*T1/(b*m^2*N1) = 2*1.6e6/(80*6.35^2*25) = 39.68",
+        "YFa_times_Ysa": 2.989,
+        "YFa_times_Ysa_per_eps": 1.9225
+      },
+      "confidence": "medium",
+      "notes": [
+        "该反算强烈依赖 eps=1.5545(即 ha*=1 假设), 若 ha*取 0.8 则 eps≈1.424, 反算 YFa*Ysa≈2.739",
+        "两条独立路径(读图 2.99 / 反算 2.99)吻合到 0.1%, 说明 何飞 表1 的 b=80mm 与 eps 解释正确"
+      ]
+    },
+
+    {
+      "id": "LIU2016-HBZ84-FORMULA-CHAIN",
+      "name": "刘新胜(2016) HB/Z84 当量齿轮法弯曲强度完整公式链",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "venue": "南京航空航天大学硕士学位论文 2016",
+        "pdf": "resources/基于航标的面齿轮传动弯曲强度计算方法研究.pdf",
+        "pdf_pages": [34, 35, 36, 37, 38, 39, 40],
+        "thesis_pages": [22, 23, 24, 25, 26, 27, 28],
+        "section": "第3章 3.1~3.2"
+      },
+      "entries": [
+        {
+          "eq": "(3-20)",
+          "name": "轮齿啮合刚度",
+          "formula": "C_gamma = (0.75*eps_a + 0.25)*C'",
+          "page": 34
+        },
+        {
+          "eq": "(3-21)",
+          "name": "最大刚度",
+          "formula": "C' = 1/q",
+          "page": 34
+        },
+        {
+          "eq": "(3-22)",
+          "name": "单位齿宽柔度 q",
+          "formula": "q = 0.04723 + 0.15551/zv1 + 0.25791/zv2 - 0.00635*x1 - 0.11654*x1/zv1 - 0.00193*x2 + 0.24188*x2/zv2 + 0.00529*x1^2 + 0.00182*x2^2",
+          "page": 34,
+          "applicability": "x1 >= x2, 0.5 <= x1+x2 <= 2.0; 直齿轮 zv=z"
+        },
+        {
+          "eq": "(3-23)(3-24)",
+          "name": "刚度近似值",
+          "formula": "C' = 14 N/(mm·um);  C_gamma = 20 N/(mm·um)",
+          "page": 35,
+          "note": "与 ISO 6336 一致的推荐值"
+        },
+        {
+          "eq": "(3-25)~(3-28)",
+          "name": "节点区域系数 ZH",
+          "formula": "Z_H = sqrt(2*cos(beta_b)*cos(alpha_t')/(cos^2(alpha_t)*sin(alpha_t')));  beta_b = arctan(tan(beta)*cos(alpha_t));  alpha_t = arctan(tan(alpha_n)/cos(beta));  inv(alpha_t') = inv(alpha_t) + 2*(x1+x2)*tan(alpha_n)/(z1+z2)",
+          "page": 35
+        },
+        {
+          "eq": "(3-29)(3-30)",
+          "name": "弹性系数 ZE",
+          "formula": "Z_E = sqrt( 1/( pi*((1-nu1^2)/E1 + (1-nu2^2)/E2) ) );  两轮同为钢(E1=E2, nu=0.3)时 Z_E = sqrt(0.175*E);  E1≠E2 时 Z_E = sqrt(0.35*E1*E2/(E1+E2))",
+          "page": 35,
+          "verified": {
+            "check": "sqrt(0.175*206000) = 189.9 ≈ ISO 标准钢 ZE=189.8 sqrt(MPa)",
+            "conclusion": "论文印刷的简写系数 0.175 / 0.35 正确"
+          }
+        },
+        {
+          "eq": "(3-31)",
+          "name": "齿形系数 YF",
+          "formula": "Y_F = 6*(h_Fe/m_n)*cos(alpha_Fen) / [ (S_Fn/m_n)^2 * cos(alpha_n) ]",
+          "page": 36
+        },
+        {
+          "eq": "(3-32)~(3-40)",
+          "name": "载荷作用角/当量齿轮几何",
+          "formula": "alpha_Fen = alpha_en - gamma_e;  alpha_en = arccos(d_bn/d_en);  d_bn = d_n*cos(alpha_n);  d_n = d/cos(beta)... ; d_an = d_a + d - d_en ...; eps_an = eps_a/cos^2(beta_b); gamma_e = (pi/2 + 2*x_n*tan(alpha_n))/z_vn + inv(alpha_n) - inv(alpha_en); z_v = z/(cos(beta_b)*cos^2(beta))",
+          "page": 36,
+          "note": "该组公式在 OCR 中严重散乱, 仅记录结构与符号; 实现时应以 ISO 6336-3 / HB/Z84.3 原文为准"
+        },
+        {
+          "eq": "(3-41)(3-42)",
+          "name": "危险截面齿厚与弯曲力臂",
+          "formula": "S_Fn = 2*[ (d_n/2 - H1)*sin(phi) - (d_n/2*phi - G)*cos(phi) - rho_a0*cos(pi/6) ];  h_Fe = d_bn/(2*cos(alpha_Fen)) - [ (d_n/2 - H1)*cos(phi) + (d_n/2*phi - G)*sin(phi) - rho_a0*sin(pi/6) ]",
+          "page": 37,
+          "symbols": "H1 刀具齿顶圆角圆心至加工节线距离; G 圆心到齿槽中心线距离; rho_a0 刀具齿顶圆半径; phi 与30°切线角对应的滚动角"
+        },
+        {
+          "eq": "(3-43)(3-44)(3-45)",
+          "name": "应力修正系数 YS ★",
+          "formula": "Y_S = (1.2 + 0.13*L) * q_s^( 1/(1.21 + 2.3/L) );  L = S_Fe/h_Fe;  q_s = S_Fn/(2*rho_f), 1 <= q_s < 8",
+          "page": 37,
+          "value": {"exponent_law": "1.21"},
+          "note": "★ 指数分母常数 1.21 已由 400dpi 渲染确认; 何飞式(22) 印刷为 1.12, 二者冲突时以 1.21 为准(ISO 6336-3 一致)"
+        },
+        {
+          "eq": "(3-46)",
+          "name": "重合度系数 Y_epsilon",
+          "formula": "Y_eps = 0.25 + 0.75/eps_an",
+          "page": 37,
+          "cross_check": {"eps_an_1.77458": 0.6726, "note": "用 LIU2016-HBZ84-DEMO 的重合度 1.77458 得 Y_eps=0.6726"}
+        },
+        {
+          "eq": "(3-47)(3-48)",
+          "name": "螺旋角系数 Ybeta",
+          "formula": "Y_beta = 1 - eps_beta*beta/120 (beta 以度计), 取 Y_beta >= Y_beta_min;  Y_beta_min = 1 - 0.25*eps_beta >= 0.75",
+          "page": 37
+        },
+        {
+          "eq": "(3-49)(3-50)",
+          "name": "相对齿根圆角敏感系数",
+          "formula": "Y_delta_relT = Y_deltaT/Y_deltaT' = (1 + rho'*X)/... ;  X ≈ (1/5)*(1 + 2*q_s)",
+          "page": 38,
+          "note": "分子分母的完整表达在 OCR 中丢失, 仅 X 式可读"
+        },
+        {
+          "eq": "(3-51)",
+          "name": "相对齿根表面状况系数",
+          "formula": "Y_RrelT = Y_R/Y_RT;  无法精确确定时取 1.0",
+          "page": 38
+        },
+        {
+          "eq": "(3-52)(3-53)",
+          "name": "尺寸系数 YX",
+          "formula": "m_n <= 5 时 Y_X = 1.0;  5 < m_n <= 10 时 Y_X = 0.95~1.0(模数大取小值)",
+          "page": 38
+        },
+        {
+          "eq": "(3-55)(3-56)(3-57)",
+          "name": "齿根应力计算",
+          "formula": "sigma_F = sigma_F0*K_A*K_V*K_Fbeta*K_Falpha <= sigma_FP;  单对齿啮合区上界点加载: sigma_F0 = (F_tF/(b*m_n))*Y_F*Y_S*Y_beta;  eps_a<2 时按齿顶加载: sigma_F0 = (F_tF/(b*m_n))*Y_Falpha*Y_Salpha*Y_eps*Y_beta",
+          "page": 39
+        },
+        {
+          "eq": "(3-58)(3-59)",
+          "name": "许用齿根应力与安全系数",
+          "formula": "sigma_FP = sigma_FLim*Y_ST*Y_NT*Y_delta_relT*Y_RrelT*Y_X / S_Fmin;  S_F = sigma_FLim*Y_ST*Y_NT*Y_delta_relT*Y_RrelT*Y_X / (sigma_F0*K_A*K_V*K_Fbeta*K_Falpha)",
+          "page": 39,
+          "cross_check": {
+            "demo_case": "LIU2016-HBZ84-DEMO",
+            "sigma_F_pinion_MPa": 669.613,
+            "SF_pinion": 0.949826,
+            "implied_sigma_FP_MPa": 636.0,
+            "input_sigma_FLim_like_MPa": 380,
+            "note": "636/380 = 1.674, 即 Y_ST*Y_NT*Y_delta_relT*Y_RrelT*Y_X/S_Fmin 的乘积。Y_ST 常取 2.0, 故其余修正总体 <1, 说明寿命系数 Y_NT<1(100h 短寿命?) 或 S_Fmin>1"
+          }
+        }
+      ],
+      "confidence": "high",
+      "confidence_note": "公式(3-43)~(3-53) 已用 400dpi 渲染逐条核对; (3-31)~(3-40) 因 OCR 散乱仅记录结构, 需以标准原文实现"
+    },
+
+    {
+      "id": "LIU2016-LOAD-FACTORS-DEMO",
+      "name": "刘新胜(2016) 软件算例的载荷与精度系数实测值",
+      "source": {
+        "paper": "基于航标的面齿轮传动弯曲强度计算方法研究",
+        "pdf_pages": [72],
+        "thesis_page": 60,
+        "figure": "图6.9 面齿轮点传动强度的基本参数计算"
+      },
+      "values": {
+        "K_A_use_factor": 1.01,
+        "K_V_dynamic_factor": 2.06112,
+        "K_Hbeta": 1.14249,
+        "K_Fbeta": 1.05381,
+        "K_Halpha": 1.0,
+        "K_Falpha": 1.0,
+        "Y_helix_load_distribution": 1.0,
+        "applied_load_N": 2052.78,
+        "gear_accuracy_grade": 6,
+        "base_pitch_deviation_um": 10,
+        "profile_form_error_um": 10,
+        "lead_error_um": 9
+      },
+      "confidence": "high",
+      "notes": [
+        "K_V=2.06 偏高, 与输入转速仅 1000 r/min、精度 6 级不符(可能软件用经验公式且未做速度区间截断) → 复现时该系数可能对不上, 属论文软件自身问题",
+        "施加载荷 2052.78 N 与名义切向力 2T/d1 = 2*95490/96 = 1989.6 N 不等(比值 1.0318), 论文未解释; 若按 K_A=1.01 修正应为 2009.5 N, 仍有 2% 差异"
+      ]
+    },
+
+    {
+      "id": "JIN2012-WIDTH-FACTOR-CORRECTION",
+      "name": "靳广虎(2012) 齿宽系数修正系数(集中载荷→全齿宽加载)",
+      "source": {
+        "paper": "正交面齿轮传动的强度与动力学特性分析研究",
+        "pdf_pages": [67, 75],
+        "thesis_pages": [51, 59],
+        "section": "4.4.4 式(4-8)(4-9) / 4.5.3 式(4-11)(4-12)"
+      },
+      "entries": [
+        {
+          "eq": "(4-8)",
+          "name": "圆柱齿轮: 集中/全齿宽弯曲应力比",
+          "formula": "sigma_1/sigma = 0.1441*phi_b + 0.2069",
+          "coefficients": {"slope": 0.1441, "intercept": 0.2069},
+          "page": 67
+        },
+        {
+          "eq": "(4-9)",
+          "name": "圆柱齿轮集中载荷齿根最大弯曲应力",
+          "formula": "sigma_1 = K_A * F_t/(b*m) * Y_FS * (0.1441*phi_b + 0.2069)",
+          "page": 67
+        },
+        {
+          "eq": "(4-11)",
+          "name": "面齿轮: 集中/全齿宽弯曲应力比",
+          "formula": "sigma_2/sigma = 0.0831*phi_b + 0.422",
+          "coefficients": {"slope": 0.0831, "intercept": 0.422},
+          "page": 75
+        },
+        {
+          "eq": "(4-12)",
+          "name": "面齿轮集中载荷齿根最大弯曲应力",
+          "formula": "sigma_2 = K_A * F_t/(b*m) * Y_FS * (0.0831*phi_b + 0.422)",
+          "page": 75
+        }
+      ],
+      "definition": {
+        "phi_b": "齿宽系数 = b/m (b 齿宽, m 模数)",
+        "Y_FS": "复合齿形系数(表4.2 / 表4.5 已逐组给出, 见 cases.json)。注意: 式(4-9)/(4-12) 里印刷的符号是 Y_S, 而表列名是'复合齿形系数'; 数值口径按表值(3.24~4.50)使用, 即 Y_Fa*Y_Sa 型复合系数, 不是单独的应力修正系数 Y_S",
+        "applicability": "模数 2~5mm, 压力角 20~27°, phi_b 建议 >=3(phi_b<3 时计算值偏小, 论文建议放大 5%)"
+      },
+      "accuracy": {
+        "cyl_mean_rel_error_percent": 5.36,
+        "cyl_max_rel_error_percent": 16.9,
+        "face_max_rel_error_percent": 18.4
+      },
+      "confidence": "high",
+      "notes": [
+        "式(4-9)/(4-12) 是这 6 篇论文中最容易直接实现的面齿轮弯曲应力公式(只需 F_t, b, m, Y_FS, phi_b)",
+        "paper-miner 用 表4.2/表4.3 第9组做量纲核算: F_t=1700N, b=24, m=2, Y_FS=4.1189, phi_b=12 → sigma=(1700/(24*2))*4.1189*1.9361=282.5 MPa, 表4.3 值 272 MPa(差 3.9%), 量级吻合"
+      ]
+    },
+
+    {
+      "id": "LI2018-BENDING-COEFFICIENTS",
+      "name": "李占平(2018) 面齿轮弯曲应力系数(齿形系数 x 拟合 + 应力集中系数 YS)",
+      "source": {
+        "paper": "非共轭点接触面齿轮传动的强度设计方法研究",
+        "pdf_pages": [46, 47],
+        "thesis_pages": [38, 39],
+        "section": "第3章 式(3.11) 表3.3"
+      },
+      "values": {
+        "x_factor_fit": {
+          "formula": "x = -6.2018*(X/b) + 8.0689,  0 < X/b <= 1",
+          "coefficients": {"slope": -6.2018, "intercept": 8.0689},
+          "page": 47
+        },
+        "section_table": [
+          {"X_over_b": "1/21", "x": 8.0185, "YS": 2.9279, "sigma_t_MPa": 187.2391},
+          {"X_over_b": "4/21", "x": 6.9361, "YS": 2.7331, "sigma_t_MPa": 202.2280},
+          {"X_over_b": "7/21", "x": 5.9222, "YS": 2.5444, "sigma_t_MPa": 221.2267},
+          {"X_over_b": "10/21", "x": 4.9768, "YS": 2.3619, "sigma_t_MPa": 246.3341},
+          {"X_over_b": "13/21", "x": 4.1024, "YS": 2.1863, "sigma_t_MPa": 281.4904},
+          {"X_over_b": "16/21", "x": 3.2974, "YS": 2.0175, "sigma_t_MPa": 334.7218},
+          {"X_over_b": "19/21", "x": 2.5636, "YS": 1.8561, "sigma_t_MPa": 425.8348},
+          {"X_over_b": "21/21", "x": 2.1151, "YS": 1.7531, "sigma_t_MPa": 534.4916}
+        ],
+        "hertz": {
+          "formula": "sigma_Hmax = 3*F_m/(2*pi*a*b)  (式2.43)",
+          "page": 32,
+          "note": "a, b 为接触椭圆长/短半轴; 150 N·m 工况下 a=5.8139~6.3036 mm, b=0.4849~0.6213 mm"
+        }
+      },
+      "confidence": "high",
+      "notes": [
+        "YS 数值 1.75~2.93 比 ISO 应力修正系数(1.5~2.0)偏大, 与作者把 'x 因子' 引入 YS 的口径有关, 不能直接与 HB/Z84 的 YS 混用",
+        "式(3.11) 的 x 随 X/b 线性递减: X/b→0(大端)时 x=8.07, X/b→1(小端)时 x=1.87"
+      ]
+    },
+
+    {
+      "id": "REN2009-CONTACT-COEFFICIENTS",
+      "name": "任雅丽(2009) 面齿轮当量齿条法接触应力系数",
+      "source": {
+        "paper": "某正交直齿面齿轮传动系接触分析_任雅丽",
+        "pdf_pages": [69, 71, 72],
+        "thesis_pages": [57, 59, 60],
+        "section": "第5章 式(5-1)~(5-11)"
+      },
+      "values": {
+        "Z_H_nodal_region": {"value": 2.285, "page": 72},
+        "Z_E_elastic": {"value": "按式(5-9) 计算, 钢=189.8 sqrt(MPa)", "page": 72},
+        "Z_eps_contact_ratio": {"value": 0.9, "page": 72},
+        "Z_beta_helix": {"value": 1.0, "page": 71, "note": "直齿 beta_b=0"},
+        "K_load_factor": {"value": 1.119, "page": 71},
+        "u_gear_ratio": {"value": 6.4, "page": 71},
+        "final_sigma_H_MPa": {"value": 317.434, "page": 72, "rounded_in_paper": 317}
+      },
+      "formulas": {
+        "sigma_H": "sigma_H = Z_H*Z_E*Z_eps*Z_beta * sqrt( F_t*(u+1)/(d_1*b*u) )   (式5-7)",
+        "F_t": "F_t = 2*K*T/d_1 * (cos(alpha_t)/cos(alpha_t'))   (式5-3)",
+        "Z_H": "见式(5-8); Z_E 见式(5-9); Z_beta = sqrt(cos(beta)) 见式(5-10)"
+      },
+      "confidence": "low",
+      "notes": [
+        "论文内部量纲不自洽: P=1000kW, n=400r/min 应得 T=23873 N·m, 但正文写 T=47746 N·m(2倍); 由式(4-3) 得 Fn=331.8 N(实应为 ~3.3e5 N, 差 1000 倍)",
+        "317.434 MPa 的具体数值组合(213.2436 与 0.72385 的归属)在 OCR 中无法还原 → 仅作趋势参考, 不作黄金基准",
+        "几何参数表(模数6.35/齿数25-160/内半径471/外半径559/齿宽88)本身可信, 与何飞表1 同族"
+      ]
+    },
+
+    {
+      "id": "HUIRU2022-MODIFICATION-VARIABLES",
+      "name": "刘慧茹(2022) 抛物线修形参数取值范围与优化算法参数",
+      "source": {
+        "paper": "直齿面齿轮副多目标优化设计计算机辅助优化",
+        "pdf_pages": [50],
+        "thesis_page": 41,
+        "section": "第4章 表4-5"
+      },
+      "values": {
+        "u0_mm": {"lower": 0.0, "initial": 1.2, "upper": 2.0},
+        "a_r_face_modification": {"lower": 0.0, "initial": 0.001, "upper": 0.01},
+        "a_e_pinion_modification": {"lower": 0.0, "initial": 0.04, "upper": 0.01, "note": "论文表4-5 印刷 initial=0.04 > upper=0.01, 明显是 0.004 的错位, 使用前需人工确认"},
+        "DOE": {"method": "ULH 均匀拉丁超立方", "size": 18},
+        "NSGA-II": {"crossover": 0.9, "mutation": 0.1, "generations": 50, "total_evaluations": 900}
+      },
+      "confidence": "medium",
+      "notes": ["表4-5 的 a_e 初值 0.04 落在上限 0.01 之外, 数据自相矛盾(疑 0.004)"]
+    },
+
+    {
+      "id": "SHARED-CONSTANTS",
+      "name": "跨论文共用的材料与几何常数(用于实现时统一取值)",
+      "source": {"papers": ["何飞2023", "刘新胜2016", "靳广虎2012", "李占平2018", "任雅丽2009", "刘慧茹2022"]},
+      "values": {
+        "steel_E_MPa": {"value": 206000.0, "used_by": ["靳广虎(表4.2/4.5 分析)", "刘慧茹(E=2.068e5)"], "page_note": "刘慧茹表4-4 给 2.068e5 N/mm²"},
+        "steel_E_MPa_HE2023": {"value": 210000.0, "used_by": ["何飞 表1"], "page": 5},
+        "steel_nu": {"value": 0.30, "used_by": ["何飞", "靳广虎"]},
+        "steel_nu_HUIRU": {"value": 0.29, "used_by": ["刘慧茹 表4-4"]},
+        "ZE_steel_sqrtMPa": {"value": 189.8, "formula": "sqrt(1/(pi*2*(1-0.3^2)/E)), E=206000", "note": "由 刘新胜式(3-29) 计算, 与 ISO 标准值一致"},
+        "addendum_coef_ha_star": {"LIU2016": 1.0, "REN2009": 1.2, "JIN2012_EXP": 1.0, "HE2023": null, "LI2018": null, "note": "何飞/李占平论文未给齿顶高系数"},
+        "clearance_coef_c_star": {"LIU2016": 0.25, "REN2009": 0.25, "JIN2012_EXP": 0.25},
+        "face_gear_pitch_radius_rule": "r_p2 = m*z2/2, 且 齿宽 b = 外半径 - 内半径 (在 刘新胜图6.3、任雅丽表2-1、何飞表1 三处交叉验证通过)"
+      },
+      "confidence": "high"
+    }
+  ]
+}
